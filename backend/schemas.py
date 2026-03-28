@@ -15,6 +15,7 @@ class InventoryRow(BaseModel):
     item: str
     current_stock: int
     unit_cost: float
+    price: float
     predicted_demand: int
     demand_change_pct: float
     recommended_change: int
@@ -31,3 +32,45 @@ class InventoryResponse(BaseModel):
 
 class ExplanationResponse(BaseModel):
     explanation: str
+
+
+class Alert(BaseModel):
+    item: str
+    level: str
+    message: str
+
+
+class AlertsResponse(BaseModel):
+    alerts: list[Alert]
+
+
+class SimulateRequest(BaseModel):
+    item: str
+    restock_qty: int
+
+
+class SimulateResponse(BaseModel):
+    item: str
+    current_stock: int
+    restock_qty: int
+    new_stock: int
+    predicted_demand: int
+    price: float
+    stockout_risk: str
+    stockout_pct: int
+    waste_risk: str
+    surplus: int
+    revenue_gain: float
+    lost_revenue: float
+
+
+class UpdateRequest(BaseModel):
+    item: str
+    action: str  # "sold", "restock", "correct"
+    amount: int
+
+
+class UpdateResponse(BaseModel):
+    item: str
+    current_stock: int
+    previous_stock: int

@@ -1,24 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Header from './components/Header'
 import PredictionCards from './components/PredictionCards'
 import InventoryTable from './components/InventoryTable'
+import AlertsBanner from './components/AlertsBanner'
 import ExplanationPanel from './components/ExplanationPanel'
+import SimulatorModal from './components/SimulatorModal'
 
 function App() {
   const [predictions, setPredictions] = useState([])
   const [inventory, setInventory] = useState([])
+  const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [simItem, setSimItem] = useState(null)
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     Promise.all([
       fetch('/predict').then(r => r.json()),
       fetch('/inventory').then(r => r.json()),
-    ]).then(([predData, invData]) => {
+      fetch('/alerts').then(r => r.json()),
+    ]).then(([predData, invData, alertData]) => {
       setPredictions(predData.predictions)
       setInventory(invData.inventory)
+      setAlerts(alertData.alerts)
       setLoading(false)
     })
   }, [])
+
+  useEffect(() => { refresh() }, [refresh])
 
   if (loading) {
     return (
@@ -32,10 +40,22 @@ function App() {
     <div className="min-h-screen">
       <Header />
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+        {alerts.length > 0 && <AlertsBanner alerts={alerts} />}
         <PredictionCards predictions={predictions} />
-        <InventoryTable inventory={inventory} />
+        <InventoryTable
+          inventory={inventory}
+          onSimulate={setSimItem}
+          onRefresh={refresh}
+        />
         <ExplanationPanel />
       </main>
+      {simItem && (
+        <SimulatorModal
+          item={simItem}
+          onClose={() => setSimItem(null)}
+          onRefresh={refresh}
+        />
+      )}
     </div>
   )
 }
