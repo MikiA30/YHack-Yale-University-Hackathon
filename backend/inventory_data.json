@@ -1,0 +1,127 @@
+{
+  "store": {
+    "name": "QuickStop #47",
+    "location": "Hartford, CT",
+    "type": "gas_station_convenience"
+  },
+  "items": [
+    {
+      "name": "Red Bull",
+      "current_stock": 40,
+      "base_weekly_demand": 50,
+      "unit_cost": 2.50,
+      "reorder_threshold": 15,
+      "category": "energy_drinks"
+    },
+    {
+      "name": "Bottled Water",
+      "current_stock": 100,
+      "base_weekly_demand": 80,
+      "unit_cost": 0.75,
+      "reorder_threshold": 25,
+      "category": "beverages"
+    },
+    {
+      "name": "Chips",
+      "current_stock": 30,
+      "base_weekly_demand": 35,
+      "unit_cost": 1.50,
+      "reorder_threshold": 10,
+      "category": "snacks"
+    },
+    {
+      "name": "Candy",
+      "current_stock": 45,
+      "base_weekly_demand": 25,
+      "unit_cost": 1.00,
+      "reorder_threshold": 10,
+      "category": "snacks"
+    },
+    {
+      "name": "Coffee",
+      "current_stock": 55,
+      "base_weekly_demand": 60,
+      "unit_cost": 1.25,
+      "reorder_threshold": 20,
+      "category": "hot_beverages"
+    },
+    {
+      "name": "Ice",
+      "current_stock": 20,
+      "base_weekly_demand": 40,
+      "unit_cost": 3.00,
+      "reorder_threshold": 8,
+      "category": "frozen"
+    },
+    {
+      "name": "Sunglasses",
+      "current_stock": 12,
+      "base_weekly_demand": 8,
+      "unit_cost": 5.00,
+      "reorder_threshold": 4,
+      "category": "accessories"
+    },
+    {
+      "name": "Beef Jerky",
+      "current_stock": 18,
+      "base_weekly_demand": 15,
+      "unit_cost": 4.50,
+      "reorder_threshold": 5,
+      "category": "snacks"
+    }
+  ],
+  "market_factors": {
+    "weather": {
+      "condition": "hot",
+      "impacts": {
+        "Red Bull": 0.15,
+        "Bottled Water": 0.30,
+        "Chips": 0.05,
+        "Candy": -0.05,
+        "Coffee": -0.20,
+        "Ice": 0.40,
+        "Sunglasses": 0.35,
+        "Beef Jerky": 0.05
+      }
+    },
+    "gas_price": {
+      "trend": "rising",
+      "impacts": {
+        "Red Bull": 0.10,
+        "Bottled Water": 0.05,
+        "Chips": 0.08,
+        "Candy": 0.03,
+        "Coffee": 0.12,
+        "Ice": 0.02,
+        "Sunglasses": 0.01,
+        "Beef Jerky": 0.06
+      }
+    },
+    "traffic": {
+      "level": "high",
+      "impacts": {
+        "Red Bull": 0.20,
+        "Bottled Water": 0.15,
+        "Chips": 0.10,
+        "Candy": 0.05,
+        "Coffee": 0.18,
+        "Ice": 0.10,
+        "Sunglasses": 0.08,
+        "Beef Jerky": 0.10
+      }
+    },
+    "trend": {
+      "season": "summer_peak",
+      "impacts": {
+        "Red Bull": 0.12,
+        "Bottled Water": 0.20,
+        "Chips": 0.05,
+        "Candy": -0.08,
+        "Coffee": -0.10,
+        "Ice": 0.25,
+        "Sunglasses": 0.20,
+        "Beef Jerky": 0.03
+      }
+    }
+  }
+}
