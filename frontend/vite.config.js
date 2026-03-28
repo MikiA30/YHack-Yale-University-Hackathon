@@ -9,6 +9,9 @@ export default defineConfig({
       '/predict': 'http://localhost:8000',
       '/inventory': 'http://localhost:8000',
       '/explain': 'http://localhost:8000',
+      '/alerts': 'http://localhost:8000',
+      '/simulate': 'http://localhost:8000',
+      '/update_inventory': 'http://localhost:8000',
     },
   },
 })

@@ -1,10 +1,18 @@
 """A.U.R.A. — Adaptive Uncertainty & Risk Agent API"""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from predictor import calculate_predictions, get_inventory_view, build_explanation_summary, generate_explanation
-from schemas import PredictionResponse, InventoryResponse, ExplanationResponse
+from data import get_item, update_stock
+from predictor import (
+    calculate_predictions, get_inventory_view, get_alerts,
+    simulate, build_explanation_summary, generate_explanation,
+)
+from schemas import (
+    PredictionResponse, InventoryResponse, ExplanationResponse,
+    AlertsResponse, SimulateRequest, SimulateResponse,
+    UpdateRequest, UpdateResponse,
+)
 
 app = FastAPI(title="A.U.R.A.", description="Adaptive Uncertainty & Risk Agent")
 
@@ -30,3 +38,42 @@ def inventory():
 def explain():
     summary = build_explanation_summary()
     return {"explanation": generate_explanation(summary)}
+
+
+@app.get("/alerts", response_model=AlertsResponse)
+def alerts():
+    return {"alerts": get_alerts()}
+
+
+@app.post("/simulate", response_model=SimulateResponse)
+def simulate_endpoint(req: SimulateRequest):
+    result = simulate(req.item, req.restock_qty)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Item '{req.item}' not found")
+    return result
+
+
+@app.post("/update_inventory", response_model=UpdateResponse)
+def update_inventory(req: UpdateRequest):
+    item = get_item(req.item)
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Item '{req.item}' not found")
+
+    previous = item["current_stock"]
+
+    if req.action == "sold":
+        new_stock = previous - req.amount
+    elif req.action == "restock":
+        new_stock = previous + req.amount
+    elif req.action == "correct":
+        new_stock = req.amount
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown action '{req.action}'")
+
+    update_stock(req.item, new_stock)
+
+    return {
+        "item": req.item,
+        "current_stock": max(0, new_stock),
+        "previous_stock": previous,
+    }
