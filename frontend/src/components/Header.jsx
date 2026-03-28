@@ -11,7 +11,12 @@ export default function Header() {
             <p className="text-xs text-slate-400">Adaptive Uncertainty & Risk Agent</p>
           </div>
         </div>
-        <span className="text-xs text-slate-500 hidden sm:block">Gas Station Inventory Intelligence</span>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-slate-500 hidden sm:block">Gas Station Inventory Intelligence</span>
+          <a href="/employee" className="text-xs px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">
+            Employee Mode
+          </a>
+        </div>
       </div>
     </header>
   )

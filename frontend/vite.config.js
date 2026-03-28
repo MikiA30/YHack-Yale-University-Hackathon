@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    host: true,
     proxy: {
       '/predict': 'http://localhost:8000',
       '/inventory': 'http://localhost:8000',
@@ -12,6 +13,9 @@ export default defineConfig({
       '/alerts': 'http://localhost:8000',
       '/simulate': 'http://localhost:8000',
       '/update_inventory': 'http://localhost:8000',
+      '/notify_scan': 'http://localhost:8000',
+      '/notifications': 'http://localhost:8000',
+      '/dismiss_notification': 'http://localhost:8000',
     },
   },
 })

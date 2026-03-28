@@ -3,7 +3,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from data import get_item, update_stock
+from data import get_item, update_stock, add_notification, get_notifications, dismiss_notification
 from predictor import (
     calculate_predictions, get_inventory_view, get_alerts,
     simulate, build_explanation_summary, generate_explanation,
@@ -12,6 +12,7 @@ from schemas import (
     PredictionResponse, InventoryResponse, ExplanationResponse,
     AlertsResponse, SimulateRequest, SimulateResponse,
     UpdateRequest, UpdateResponse,
+    ScanNotification, NotificationsResponse, DismissRequest,
 )
 
 app = FastAPI(title="A.U.R.A.", description="Adaptive Uncertainty & Risk Agent")
@@ -77,3 +78,22 @@ def update_inventory(req: UpdateRequest):
         "current_stock": max(0, new_stock),
         "previous_stock": previous,
     }
+
+
+@app.post("/notify_scan")
+def notify_scan(notif: ScanNotification):
+    result = add_notification(notif.barcode, notif.product_name, notif.brands)
+    return result
+
+
+@app.get("/notifications", response_model=NotificationsResponse)
+def notifications():
+    return {"notifications": get_notifications()}
+
+
+@app.post("/dismiss_notification")
+def dismiss(req: DismissRequest):
+    result = dismiss_notification(req.id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return result
