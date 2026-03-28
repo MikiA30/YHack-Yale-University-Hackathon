@@ -36,3 +36,34 @@ def update_stock(name, new_stock):
 
 def get_market_factors():
     return _market_factors
+
+
+# --- Scan notifications for manager inbox ---
+_notifications = []
+_notif_id = 0
+
+
+def add_notification(barcode, product_name, brands):
+    global _notif_id
+    _notif_id += 1
+    notif = {
+        "id": _notif_id,
+        "barcode": barcode,
+        "product_name": product_name,
+        "brands": brands or "",
+        "status": "pending",  # pending | dismissed
+    }
+    _notifications.append(notif)
+    return notif
+
+
+def get_notifications():
+    return [n for n in _notifications if n["status"] == "pending"]
+
+
+def dismiss_notification(notif_id):
+    for n in _notifications:
+        if n["id"] == notif_id:
+            n["status"] = "dismissed"
+            return n
+    return None

@@ -5,6 +5,7 @@ import InventoryTable from './components/InventoryTable'
 import AlertsBanner from './components/AlertsBanner'
 import ExplanationPanel from './components/ExplanationPanel'
 import SimulatorModal from './components/SimulatorModal'
+import NotificationInbox from './components/NotificationInbox'
 
 function App() {
   const [predictions, setPredictions] = useState([])
@@ -28,6 +29,12 @@ function App() {
 
   useEffect(() => { refresh() }, [refresh])
 
+  // Auto-poll every 3 seconds for live sync with employee page
+  useEffect(() => {
+    const interval = setInterval(refresh, 3000)
+    return () => clearInterval(interval)
+  }, [refresh])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -40,6 +47,7 @@ function App() {
     <div className="min-h-screen">
       <Header />
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+        <NotificationInbox />
         {alerts.length > 0 && <AlertsBanner alerts={alerts} />}
         <PredictionCards predictions={predictions} />
         <InventoryTable
