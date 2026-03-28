@@ -74,3 +74,25 @@ class UpdateResponse(BaseModel):
     item: str
     current_stock: int
     previous_stock: int
+
+
+class ScanNotification(BaseModel):
+    barcode: str
+    product_name: str
+    brands: str = ""
+
+
+class NotificationOut(BaseModel):
+    id: int
+    barcode: str
+    product_name: str
+    brands: str
+    status: str
+
+
+class NotificationsResponse(BaseModel):
+    notifications: list[NotificationOut]
+
+
+class DismissRequest(BaseModel):
+    id: int
