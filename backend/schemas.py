@@ -16,6 +16,8 @@ class InventoryRow(BaseModel):
     current_stock: int
     unit_cost: float
     price: float
+    aisle: str = ""
+    aisle_name: str = ""
     predicted_demand: int
     demand_change_pct: float
     recommended_change: int
@@ -114,3 +116,22 @@ class AddProductResponse(BaseModel):
     factors: dict
     reasoning: str
     factor_source: str
+
+
+class RemoveProductRequest(BaseModel):
+    name: str
+
+
+class RemoveProductResponse(BaseModel):
+    item: str
+    removed: bool
+
+
+class ChatRequest(BaseModel):
+    message: str
+    model: str | None = None
+
+
+class ChatResponse(BaseModel):
+    response: str
+    model: str
