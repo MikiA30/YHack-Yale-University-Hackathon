@@ -3,8 +3,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from data import get_item, update_stock, add_product, add_notification, get_notifications, dismiss_notification
+from data import get_item, update_stock, add_product, remove_product, add_notification, get_notifications, dismiss_notification
 from ai_profiler import generate_product_profile
+from chatbot import chat as ai_chat
 from predictor import (
     calculate_predictions, get_inventory_view, get_alerts,
     simulate, build_explanation_summary, generate_explanation,
@@ -15,6 +16,8 @@ from schemas import (
     UpdateRequest, UpdateResponse,
     ScanNotification, NotificationsResponse, DismissRequest,
     AddProductRequest, AddProductResponse,
+    RemoveProductRequest, RemoveProductResponse,
+    ChatRequest, ChatResponse,
 )
 
 app = FastAPI(title="A.U.R.A.", description="Adaptive Uncertainty & Risk Agent")
@@ -133,3 +136,17 @@ def add_product_endpoint(req: AddProductRequest):
         "reasoning": profile.get("reasoning", ""),
         "factor_source": profile.get("factor_source", "default"),
     }
+
+
+@app.post("/remove_product", response_model=RemoveProductResponse)
+def remove_product_endpoint(req: RemoveProductRequest):
+    result = remove_product(req.name)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"'{req.name}' not found")
+    return {"item": req.name, "removed": True}
+
+
+@app.post("/chat", response_model=ChatResponse)
+def chat_endpoint(req: ChatRequest):
+    result = ai_chat(req.message, model=req.model)
+    return result

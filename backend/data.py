@@ -9,6 +9,7 @@ _DATA_PATH = Path(__file__).parent / "inventory_data.json"
 # Load once at startup into mutable state
 _raw = json.loads(_DATA_PATH.read_text())
 _store = _raw["store"]
+_aisles = _raw.get("aisles", {})
 _market_factors = _raw["market_factors"]
 
 # Mutable inventory — keyed by item name for fast lookup
@@ -34,6 +35,10 @@ def update_stock(name, new_stock):
     return None
 
 
+def get_aisles():
+    return _aisles
+
+
 def get_market_factors():
     return _market_factors
 
@@ -54,6 +59,16 @@ def add_product(name, current_stock, base_weekly_demand, unit_cost, price, reord
     _market_factors["traffic"]["impacts"][name] = factors["traffic_factor"]
     _market_factors["trend"]["impacts"][name] = factors["trend_factor"]
     return _inventory[name]
+
+
+def remove_product(name):
+    """Remove a product from inventory and market factors."""
+    if name not in _inventory:
+        return None
+    removed = _inventory.pop(name)
+    for factor_type in _market_factors.values():
+        factor_type["impacts"].pop(name, None)
+    return removed
 
 
 # --- Scan notifications for manager inbox ---

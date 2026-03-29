@@ -17,6 +17,8 @@ export default defineConfig({
       '/notifications': 'http://localhost:8000',
       '/dismiss_notification': 'http://localhost:8000',
       '/add_product': 'http://localhost:8000',
+      '/remove_product': 'http://localhost:8000',
+      '/chat': 'http://localhost:8000',
     },
   },
 })

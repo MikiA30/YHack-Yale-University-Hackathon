@@ -7,6 +7,7 @@ import ExplanationPanel from './components/ExplanationPanel'
 import SimulatorModal from './components/SimulatorModal'
 import NotificationInbox from './components/NotificationInbox'
 import AddProductPanel from './components/AddProductPanel'
+import ChatPanel from './components/ChatPanel'
 
 function App() {
   const [predictions, setPredictions] = useState([])
@@ -66,6 +67,7 @@ function App() {
           onRefresh={refresh}
         />
       )}
+      <ChatPanel />
     </div>
   )
 }
