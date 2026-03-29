@@ -16,6 +16,7 @@ export default defineConfig({
       '/notify_scan': 'http://localhost:8000',
       '/notifications': 'http://localhost:8000',
       '/dismiss_notification': 'http://localhost:8000',
+      '/add_product': 'http://localhost:8000',
     },
   },
 })
