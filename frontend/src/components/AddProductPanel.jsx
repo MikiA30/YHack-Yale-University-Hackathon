@@ -1,27 +1,38 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const CATEGORIES = [
-  'beverages', 'energy_drinks', 'snacks', 'hot_beverages',
-  'frozen', 'accessories', 'produce', 'general',
-]
+  "beverages",
+  "energy_drinks",
+  "snacks",
+  "hot_beverages",
+  "frozen",
+  "accessories",
+  "produce",
+  "general",
+];
 
 export default function AddProductPanel({ onRefresh }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    name: '', current_stock: '', base_weekly_demand: '',
-    unit_cost: '', price: '', reorder_threshold: '10', category: 'general',
-  })
-  const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState(null)
+    name: "",
+    current_stock: "",
+    base_weekly_demand: "",
+    unit_cost: "",
+    price: "",
+    reorder_threshold: "10",
+    category: "general",
+  });
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
 
-  const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
+  const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
   const submit = () => {
-    setBusy(true)
-    setResult(null)
-    fetch('/add_product', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    setBusy(true);
+    setResult(null);
+    fetch("/add_product", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: form.name,
         current_stock: parseInt(form.current_stock),
@@ -32,102 +43,248 @@ export default function AddProductPanel({ onRefresh }) {
         category: form.category,
       }),
     })
-      .then(r => r.json())
-      .then(data => {
-        setResult(data)
-        setBusy(false)
-        onRefresh()
+      .then((r) => r.json())
+      .then((data) => {
+        setResult(data);
+        setBusy(false);
+        onRefresh();
       })
-      .catch(() => setBusy(false))
-  }
+      .catch(() => setBusy(false));
+  };
 
-  const valid = form.name && form.current_stock && form.base_weekly_demand && form.unit_cost && form.price
+  const valid =
+    form.name &&
+    form.current_stock &&
+    form.base_weekly_demand &&
+    form.unit_cost &&
+    form.price;
+
+  const inputCls =
+    "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-900/10 transition-all duration-150";
+
+  const labelCls = "block text-xs font-medium text-gray-500 mb-1.5";
 
   if (!open) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 text-sm font-medium rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors"
+        className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98]"
       >
-        + Add Product
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        Add Product
       </button>
-    )
+    );
   }
 
   return (
-    <section className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-200">Add New Product</h2>
-        <button onClick={() => { setOpen(false); setResult(null) }} className="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
-          <label className="text-xs text-slate-400">Product Name</label>
-          <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Bananas"
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Starting Stock</label>
-          <input type="number" value={form.current_stock} onChange={e => set('current_stock', e.target.value)} placeholder="50"
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Weekly Demand (est.)</label>
-          <input type="number" value={form.base_weekly_demand} onChange={e => set('base_weekly_demand', e.target.value)} placeholder="30"
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Unit Cost ($)</label>
-          <input type="number" step="0.01" value={form.unit_cost} onChange={e => set('unit_cost', e.target.value)} placeholder="0.50"
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Sell Price ($)</label>
-          <input type="number" step="0.01" value={form.price} onChange={e => set('price', e.target.value)} placeholder="1.29"
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Reorder Threshold</label>
-          <input type="number" value={form.reorder_threshold} onChange={e => set('reorder_threshold', e.target.value)}
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500" />
-        </div>
-        <div>
-          <label className="text-xs text-slate-400">Category</label>
-          <select value={form.category} onChange={e => set('category', e.target.value)}
-            className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:border-violet-500">
-            {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <button
-        onClick={submit}
-        disabled={!valid || busy}
-        className="w-full py-2.5 text-sm font-medium rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50"
-      >
-        {busy ? 'AI is profiling...' : 'Add Product'}
-      </button>
-
-      {result && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-sm space-y-2">
-          <p className="text-emerald-400 font-medium">
-            Added "{result.item}" to inventory
-            <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${result.factor_source === 'lava' ? 'bg-violet-500/20 text-violet-400' : 'bg-slate-600/50 text-slate-400'}`}>
-              {result.factor_source === 'lava' ? 'AI-powered' : 'Default factors'}
-            </span>
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
-            <p>Weather: {(result.factors.weather_factor * 100).toFixed(0)}%</p>
-            <p>Traffic: {(result.factors.traffic_factor * 100).toFixed(0)}%</p>
-            <p>Gas Price: {(result.factors.gas_price_factor * 100).toFixed(0)}%</p>
-            <p>Trend: {(result.factors.trend_factor * 100).toFixed(0)}%</p>
+    <section>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">Add New Product</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              A.U.R.A. will generate demand factors automatically
+            </p>
           </div>
-          {result.reasoning && (
-            <p className="text-xs text-slate-400 italic">{result.reasoning}</p>
+          <button
+            onClick={() => {
+              setOpen(false);
+              setResult(null);
+            }}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-150 text-lg leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          {/* Name (full width) */}
+          <div>
+            <label className={labelCls}>Product Name</label>
+            <input
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              placeholder="e.g. Celsius Tropical Vibe"
+              className={inputCls}
+            />
+          </div>
+
+          {/* 2-col grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelCls}>Starting Stock</label>
+              <input
+                type="number"
+                value={form.current_stock}
+                onChange={(e) => set("current_stock", e.target.value)}
+                placeholder="50"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Weekly Demand (est.)</label>
+              <input
+                type="number"
+                value={form.base_weekly_demand}
+                onChange={(e) => set("base_weekly_demand", e.target.value)}
+                placeholder="30"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Unit Cost ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={form.unit_cost}
+                onChange={(e) => set("unit_cost", e.target.value)}
+                placeholder="0.50"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Sell Price ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={form.price}
+                onChange={(e) => set("price", e.target.value)}
+                placeholder="1.29"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Reorder Threshold</label>
+              <input
+                type="number"
+                value={form.reorder_threshold}
+                onChange={(e) => set("reorder_threshold", e.target.value)}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Category</label>
+              <select
+                value={form.category}
+                onChange={(e) => set("category", e.target.value)}
+                className={inputCls}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c.replace(/_/g, " ")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            onClick={submit}
+            disabled={!valid || busy}
+            className="w-full py-2.5 text-sm font-semibold rounded-lg bg-gray-900 hover:bg-black text-white transition-all duration-150 disabled:opacity-40 active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            {busy ? (
+              <>
+                <svg
+                  className="w-3.5 h-3.5 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+                A.U.R.A. is profiling…
+              </>
+            ) : (
+              "Add Product"
+            )}
+          </button>
+
+          {/* Result */}
+          {result && (
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-gray-900">
+                  "{result.item}" added to inventory
+                </p>
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                    result.factor_source === "lava"
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-500 border border-gray-200"
+                  }`}
+                >
+                  {result.factor_source === "lava"
+                    ? "AI-powered"
+                    : "Default factors"}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  [
+                    "Weather",
+                    `${(result.factors.weather_factor * 100).toFixed(0)}%`,
+                  ],
+                  [
+                    "Traffic",
+                    `${(result.factors.traffic_factor * 100).toFixed(0)}%`,
+                  ],
+                  [
+                    "Gas Price",
+                    `${(result.factors.gas_price_factor * 100).toFixed(0)}%`,
+                  ],
+                  [
+                    "Trend",
+                    `${(result.factors.trend_factor * 100).toFixed(0)}%`,
+                  ],
+                ].map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="flex items-center justify-between px-3 py-2 bg-white border border-gray-100 rounded-lg"
+                  >
+                    <span className="text-xs text-gray-500">{k}</span>
+                    <span className="text-xs font-semibold text-gray-900">
+                      {v}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {result.reasoning && (
+                <p className="text-xs text-gray-500 italic leading-relaxed">
+                  {result.reasoning}
+                </p>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </section>
-  )
+  );
 }

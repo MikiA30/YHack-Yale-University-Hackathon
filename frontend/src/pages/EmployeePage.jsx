@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import AuraLogo from "../components/AuraLogo";
 import { Html5Qrcode } from "html5-qrcode";
 
 const ITEMS = [
@@ -142,7 +143,7 @@ export default function EmployeePage() {
           },
           () => {}, // ignore scan-miss frames
         )
-        .catch((err) => {
+        .catch(() => {
           setScanning(false);
           setScanError(
             "Camera access denied or unavailable. Use manual controls below.",
@@ -238,27 +239,37 @@ export default function EmployeePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <header className="bg-slate-900/80 border-b border-slate-700/50 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-            A
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200/80">
+        <div className="px-5 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <AuraLogo size={28} />
+            <div>
+              <h1 className="text-sm font-semibold text-gray-900 leading-none">
+                Employee Mode
+              </h1>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Scan & Update Inventory
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-white">Employee Mode</h1>
-            <p className="text-xs text-slate-400">Scan & Update Inventory</p>
-          </div>
+          <a
+            href="/"
+            className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium transition-all duration-150"
+          >
+            ← Dashboard
+          </a>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col items-center px-5 py-8 max-w-md mx-auto w-full space-y-6">
+      <main className="flex-1 flex flex-col items-center px-5 py-8 max-w-md mx-auto w-full space-y-5">
         {/* Barcode scanner section */}
         <div className="w-full space-y-3">
           {!scanning ? (
             <button
               onClick={startScanner}
-              className="w-full py-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-lg transition-colors active:scale-95 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-base transition-all duration-150 active:scale-[0.98] flex items-center justify-center gap-2.5 shadow-sm"
             >
               <svg
                 className="w-5 h-5"
@@ -269,21 +280,21 @@ export default function EmployeePage() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.75}
                   d="M3 9V5a2 2 0 012-2h4M15 3h4a2 2 0 012 2v4M21 15v4a2 2 0 01-2 2h-4M9 21H5a2 2 0 01-2-2v-4"
                 />
               </svg>
-              Scan Item
+              Scan Barcode
             </button>
           ) : (
             <div className="space-y-3">
               <div
                 id="barcode-reader"
-                className="w-full rounded-xl overflow-hidden"
+                className="w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm"
               />
               <button
                 onClick={stopScanner}
-                className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
+                className="w-full py-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium text-sm transition-all duration-150"
               >
                 Cancel Scan
               </button>
@@ -291,7 +302,7 @@ export default function EmployeePage() {
           )}
 
           {scanError && (
-            <div className="w-full rounded-xl p-4 border bg-amber-500/10 border-amber-500/30 text-amber-400 text-sm text-center">
+            <div className="w-full rounded-xl p-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm text-center">
               {scanError}
             </div>
           )}
@@ -300,37 +311,60 @@ export default function EmployeePage() {
             <div
               className={`w-full rounded-xl p-4 border text-center text-sm ${
                 scanResult.status === "success"
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                   : scanResult.status === "looking_up"
-                    ? "bg-violet-500/10 border-violet-500/30 text-violet-400"
+                    ? "bg-gray-50 border-gray-200 text-gray-600"
                     : scanResult.status === "no_match"
-                      ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                      : "bg-red-500/10 border-red-500/30 text-red-400"
+                      ? "bg-amber-50 border-amber-200 text-amber-700"
+                      : "bg-red-50 border-red-200 text-red-700"
               }`}
             >
-              <p className="text-xs opacity-75 mb-1">
-                Scanned: {scanResult.code}
+              <p className="text-xs text-gray-400 mb-1 font-mono">
+                {scanResult.code}
               </p>
               {scanResult.productName && (
-                <p className="text-xs opacity-75 mb-1">
-                  Product: {scanResult.productName}
+                <p className="text-xs text-gray-500 mb-2">
+                  {scanResult.productName}
                 </p>
               )}
               {scanResult.status === "looking_up" && (
-                <p className="font-medium">Looking up product...</p>
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="w-4 h-4 animate-spin text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    />
+                  </svg>
+                  <p className="font-medium text-gray-600">
+                    Looking up product…
+                  </p>
+                </div>
               )}
               {scanResult.status === "success" && (
-                <p className="font-medium">Sold 1 × {scanResult.item}</p>
+                <p className="font-semibold">✓ Sold 1 × {scanResult.item}</p>
               )}
               {scanResult.status === "no_match" && (
                 <div>
-                  <p className="font-medium mb-2">
-                    Product not in inventory — manager notified
+                  <p className="font-semibold mb-1">
+                    Not in inventory — manager notified
                   </p>
-                  <p className="text-xs opacity-75 mb-2">
-                    Select the closest item to record this sale:
+                  <p className="text-xs text-gray-500 mb-3">
+                    Select the closest match to record this sale:
                   </p>
-                  <div className="flex gap-2 flex-wrap justify-center">
+                  <div className="flex gap-1.5 flex-wrap justify-center">
                     {ITEMS.map((name) => (
                       <button
                         key={name}
@@ -342,7 +376,7 @@ export default function EmployeePage() {
                           });
                           doAction("sold", 1, name);
                         }}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                        className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-medium transition-all duration-150 active:scale-[0.97]"
                       >
                         {name}
                       </button>
@@ -352,7 +386,7 @@ export default function EmployeePage() {
               )}
               {scanResult.status === "unknown" && (
                 <p className="font-medium">
-                  Unknown barcode — use manual selection
+                  Unknown barcode — use manual selection below
                 </p>
               )}
             </div>
@@ -361,74 +395,85 @@ export default function EmployeePage() {
 
         {/* Divider */}
         <div className="w-full flex items-center gap-3">
-          <div className="flex-1 h-px bg-slate-700" />
-          <span className="text-xs text-slate-500">or select manually</span>
-          <div className="flex-1 h-px bg-slate-700" />
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 font-medium">
+            or select manually
+          </span>
+          <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        {/* Item selector */}
-        <div className="w-full space-y-2">
-          <label className="text-sm text-slate-400">Select Item</label>
-          <select
-            value={selected}
-            onChange={(e) => {
-              setSelected(e.target.value);
-              setFeedback(null);
-            }}
-            className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-lg focus:outline-none focus:border-violet-500"
-          >
-            {ITEMS.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Item selector + stock */}
+        <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              Select Item
+            </label>
+            <select
+              value={selected}
+              onChange={(e) => {
+                setSelected(e.target.value);
+                setFeedback(null);
+              }}
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 text-sm font-medium focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-900/10 transition-all duration-150"
+            >
+              {ITEMS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Current stock display */}
-        <div className="w-full bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 text-center">
-          <p className="text-slate-400 text-sm">Current Stock</p>
-          <p className="text-4xl font-bold text-white mt-1">
-            {stock !== null ? stock : "—"}
-          </p>
+          {/* Stock display */}
+          <div className="px-4 py-4 text-center">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+              Current Stock
+            </p>
+            <p className="text-5xl font-bold text-gray-900 tabular-nums tracking-tight">
+              {stock !== null ? stock : "—"}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">units in inventory</p>
+          </div>
         </div>
 
         {/* Quick action buttons */}
-        <div className="w-full grid grid-cols-2 gap-3">
+        <div className="w-full grid grid-cols-2 gap-2">
           <button
             disabled={busy}
             onClick={() => doAction("sold", 1)}
-            className="py-4 rounded-xl bg-red-600/80 hover:bg-red-500 text-white font-semibold text-lg transition-colors disabled:opacity-40 active:scale-95"
+            className="py-3.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 font-semibold text-sm transition-all duration-150 disabled:opacity-40 active:scale-[0.97]"
           >
             Sell 1
           </button>
           <button
             disabled={busy}
             onClick={() => doAction("sold", 5)}
-            className="py-4 rounded-xl bg-red-600/80 hover:bg-red-500 text-white font-semibold text-lg transition-colors disabled:opacity-40 active:scale-95"
+            className="py-3.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 font-semibold text-sm transition-all duration-150 disabled:opacity-40 active:scale-[0.97]"
           >
             Sell 5
           </button>
           <button
             disabled={busy}
             onClick={() => doAction("restock", 10)}
-            className="py-4 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-white font-semibold text-lg transition-colors disabled:opacity-40 active:scale-95 col-span-2"
+            className="py-3.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-sm transition-all duration-150 disabled:opacity-40 active:scale-[0.97] col-span-2"
           >
             Restock +10
           </button>
         </div>
 
         {/* Custom quantity */}
-        <div className="w-full space-y-2">
-          <label className="text-sm text-slate-400">Custom Quantity</label>
+        <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">
+          <label className="block text-xs font-medium text-gray-500">
+            Custom Quantity
+          </label>
           <div className="flex gap-2">
             <input
               type="number"
               min="1"
               value={customQty}
               onChange={(e) => setCustomQty(e.target.value)}
-              placeholder="Enter amount..."
-              className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-lg focus:outline-none focus:border-violet-500"
+              placeholder="Enter amount…"
+              className="flex-1 px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-900/10 transition-all duration-150"
             />
             <button
               disabled={busy || !customQty || parseInt(customQty) < 1}
@@ -436,7 +481,7 @@ export default function EmployeePage() {
                 doAction("sold", parseInt(customQty));
                 setCustomQty("");
               }}
-              className="px-4 py-3 rounded-xl bg-red-600/80 hover:bg-red-500 text-white font-semibold transition-colors disabled:opacity-40 active:scale-95"
+              className="px-4 py-2.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-semibold transition-all duration-150 disabled:opacity-40 active:scale-[0.97]"
             >
               Sell
             </button>
@@ -446,7 +491,7 @@ export default function EmployeePage() {
                 doAction("restock", parseInt(customQty));
                 setCustomQty("");
               }}
-              className="px-4 py-3 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-white font-semibold transition-colors disabled:opacity-40 active:scale-95"
+              className="px-4 py-2.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-semibold transition-all duration-150 disabled:opacity-40 active:scale-[0.97]"
             >
               Restock
             </button>
@@ -458,27 +503,22 @@ export default function EmployeePage() {
           <div
             className={`w-full rounded-xl p-4 border text-center text-sm ${
               feedback.action === "sold"
-                ? "bg-red-500/10 border-red-500/30 text-red-400"
-                : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                ? "bg-red-50 border-red-200 text-red-700"
+                : "bg-emerald-50 border-emerald-200 text-emerald-700"
             }`}
           >
-            <p className="font-medium">
+            <p className="font-semibold">
               {feedback.action === "sold" ? "Sold" : "Restocked"}{" "}
               {feedback.amount} × {feedback.item}
             </p>
-            <p className="mt-1 text-xs opacity-75">
+            <p className="mt-0.5 text-xs opacity-60">
               {feedback.prev} → {feedback.now} units
             </p>
           </div>
         )}
 
-        {/* Link back */}
-        <a
-          href="/"
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors mt-4"
-        >
-          ← Back to Dashboard
-        </a>
+        {/* Spacer */}
+        <div className="pb-2" />
       </main>
     </div>
   );

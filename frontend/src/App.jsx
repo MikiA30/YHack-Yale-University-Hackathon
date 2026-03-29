@@ -9,6 +9,7 @@ import SimulatorModal from "./components/SimulatorModal";
 import NotificationInbox from "./components/NotificationInbox";
 import AddProductPanel from "./components/AddProductPanel";
 import ChatPanel from "./components/ChatPanel";
+import ReportModal from "./components/ReportModal";
 
 function App() {
   const [predictions, setPredictions] = useState([]);
@@ -16,6 +17,13 @@ function App() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [simItem, setSimItem] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportScrollTo, setReportScrollTo] = useState(null);
+
+  const openReport = (scrollTo = null) => {
+    setReportScrollTo(scrollTo);
+    setReportOpen(true);
+  };
 
   const refresh = useCallback(() => {
     Promise.all([
@@ -42,28 +50,48 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-400 text-lg">Loading predictions...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-gray-400">Loading A.U.R.A.…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-100">
       <Header />
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Scan notifications */}
         <NotificationInbox />
+
+        {/* Alerts */}
         {alerts.length > 0 && <AlertsBanner alerts={alerts} />}
+
+        {/* Demand predictions */}
         <PredictionCards predictions={predictions} />
+
+        {/* Inventory table */}
         <InventoryTable
           inventory={inventory}
           onSimulate={setSimItem}
           onRefresh={refresh}
         />
-        <AddProductPanel onRefresh={refresh} />
-        <LocationSettings />
-        <ExplanationPanel />
+
+        {/* Bottom row: Add product + Location + Explanation */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 flex flex-col gap-6">
+            <AddProductPanel onRefresh={refresh} />
+            <LocationSettings />
+          </div>
+          <div className="lg:col-span-2">
+            <ExplanationPanel />
+          </div>
+        </div>
       </main>
+
       {simItem && (
         <SimulatorModal
           item={simItem}
@@ -71,7 +99,12 @@ function App() {
           onRefresh={refresh}
         />
       )}
-      <ChatPanel />
+      <ChatPanel onOpenReport={openReport} />
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        scrollTo={reportScrollTo}
+      />
     </div>
   );
 }
