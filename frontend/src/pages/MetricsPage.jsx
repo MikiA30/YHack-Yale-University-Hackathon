@@ -98,7 +98,7 @@ export default function MetricsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-400">Loading metrics…</p>
+        <p className="text-gray-400">Loading metrics…</p>
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function MetricsPage() {
   const noSales = !financials?.by_product?.length;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-100">
       {/* header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200/80">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
@@ -151,28 +151,24 @@ export default function MetricsPage() {
               value={fmt$(financials?.total_revenue ?? 0)}
               sub="sales recorded today"
               color="emerald"
-              icon={<span className="text-white text-lg font-bold">$</span>}
             />
             <StatCard
               label="Total Profit"
               value={fmt$(financials?.total_profit ?? 0)}
               sub={`${fmtPct(financials?.margin_pct ?? 0)} margin`}
               color="violet"
-              icon={<span className="text-white text-sm font-bold">↑</span>}
             />
             <StatCard
               label="Projected Lost Revenue"
               value={fmt$(losses?.total_lost_revenue ?? 0)}
               sub="from stockout risk items"
               color="red"
-              icon={<span className="text-white text-sm font-bold">!</span>}
             />
             <StatCard
               label="Projected Lost Profit"
               value={fmt$(losses?.total_lost_profit ?? 0)}
               sub="profit at risk this week"
               color="amber"
-              icon={<span className="text-white text-sm font-bold">↓</span>}
             />
           </div>
         </section>
