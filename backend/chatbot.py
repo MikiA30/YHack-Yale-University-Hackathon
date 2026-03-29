@@ -2,21 +2,28 @@
 
 import json
 import os
+from importlib import import_module
 from pathlib import Path
+from types import ModuleType
 from urllib.parse import quote
 
-import httpx
 from data import get_aisles, get_items, get_market_factors, get_store_info
 from dotenv import load_dotenv
 from live_factors import get_live_factors
 from predictor import calculate_predictions, get_alerts, get_inventory_view, get_all_factor_breakdowns
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
-
-LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
 
 # Default model — can be overridden per request
 DEFAULT_MODEL = "claude-sonnet-4-6-20250514"
+
+
+def _get_httpx() -> ModuleType | None:
+    try:
+        return import_module("httpx")
+    except ModuleNotFoundError:
+        return None
 
 
 def _build_store_context():
@@ -157,7 +164,9 @@ Rules:
 
 def chat(user_message, model=None):
     """Send a message to Claude with full store context."""
-    if not LAVA_FORWARD_TOKEN:
+    httpx = _get_httpx()
+    lava_forward_token = os.getenv("LAVA_FORWARD_TOKEN", "").strip()
+    if not lava_forward_token or httpx is None:
         return {
             "response": "AI chatbot is not configured. Set LAVA_FORWARD_TOKEN to enable.",
             "model": "none",
@@ -173,7 +182,7 @@ def chat(user_message, model=None):
         response = httpx.post(
             lava_url,
             headers={
-                "Authorization": f"Bearer {LAVA_FORWARD_TOKEN}",
+                "Authorization": f"Bearer {lava_forward_token}",
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01",
             },
@@ -206,7 +215,9 @@ def explain_store(summary):
     """Generate a short, plain-English explanation of current recommendations.
     Takes a small structured summary — NOT full inventory JSON.
     Uses Haiku only for speed and reliability."""
-    if not LAVA_FORWARD_TOKEN:
+    httpx = _get_httpx()
+    lava_forward_token = os.getenv("LAVA_FORWARD_TOKEN", "").strip()
+    if not lava_forward_token or httpx is None:
         return None  # caller will fall back to mock
 
     movers = summary["top_movers"]
@@ -247,7 +258,7 @@ def explain_store(summary):
         response = httpx.post(
             lava_url,
             headers={
-                "Authorization": f"Bearer {LAVA_FORWARD_TOKEN}",
+                "Authorization": f"Bearer {lava_forward_token}",
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01",
             },
