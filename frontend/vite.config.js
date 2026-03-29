@@ -17,6 +17,7 @@ export default defineConfig({
       "/location": "http://localhost:8000",
       "/set_location": "http://localhost:8000",
       "/live_signals": "http://localhost:8000",
+      "/report": "http://localhost:8000",
       "/financials": "http://localhost:8000",
       "/stockout_losses": "http://localhost:8000",
       "/eod_summary": "http://localhost:8000",
