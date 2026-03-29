@@ -2,11 +2,13 @@
 
 import json
 import os
+import re
 from pathlib import Path
 from urllib.parse import quote
 
 import httpx
 from data import get_aisles, get_items, get_market_factors, get_store_info
+from finance import get_daily_financials, get_stockout_losses
 from dotenv import load_dotenv
 from live_factors import get_live_factors
 from predictor import calculate_predictions, get_alerts, get_inventory_view, get_all_factor_breakdowns
@@ -17,6 +19,20 @@ LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
 
 # Default model — can be overridden per request
 DEFAULT_MODEL = "claude-sonnet-4-6-20250514"
+
+# ── Report action detection ───────────────────────────────────────────────────
+_REPORT_RE  = re.compile(r'\b(generate|create|make|show|export|download|get)\b.{0,30}\breport\b', re.I)
+_EXPORT_RE  = re.compile(r'\b(export|download|save)\b.{0,20}\b(pdf|excel|spreadsheet)\b', re.I)
+_FORECAST_RE = re.compile(r'\bshow\b.{0,20}\bforecast\b.{0,20}\bfor\b\s+(.+?)(?:\?|$)', re.I)
+
+
+def _detect_action(message: str) -> tuple:
+    if _REPORT_RE.search(message) or _EXPORT_RE.search(message):
+        return "open_report", None
+    m = _FORECAST_RE.search(message)
+    if m:
+        return "show_forecast", {"item": m.group(1).strip().rstrip("?").strip()}
+    return None, None
 
 
 def _build_store_context():
@@ -68,6 +84,74 @@ def _build_store_context():
             f"- Event signals: {live['event'].get('summary', 'n/a')} "
             f"[score: {live['event'].get('score', 0.0):+.2f}]",
         ]
+    except Exception:
+        pass
+
+    # Daily financials and stockout loss projections
+    fin_lines = ["- Live financial data unavailable"]
+    try:
+        financials = get_daily_financials()
+        losses = get_stockout_losses()
+        fin_lines = [
+            f"- Today Revenue: ${financials['total_revenue']:.2f}",
+            f"- Today Profit: ${financials['total_profit']:.2f}",
+            f"- Today Margin: {financials['margin_pct']:.1f}%",
+        ]
+        if financials["by_product"]:
+            top = financials["by_product"][0]
+            fin_lines.append(
+                f"- Top seller today: {top['item']} "
+                f"(${top['revenue']:.2f} revenue, {top['units_sold']} units, "
+                f"${top['profit']:.2f} profit)"
+            )
+        else:
+            fin_lines.append("- No sales recorded yet today")
+        total_loss_rev    = round(sum(l["lost_revenue"] for l in losses), 2)
+        total_loss_profit = round(sum(l["lost_profit"]  for l in losses), 2)
+        fin_lines.append(
+            f"- Projected lost revenue this week (stockout risk): ${total_loss_rev:.2f}"
+        )
+        fin_lines.append(
+            f"- Projected lost profit this week (stockout risk): ${total_loss_profit:.2f}"
+        )
+        if losses:
+            worst = losses[0]
+            fin_lines.append(
+                f"- Highest-risk stockout: {worst['item']} "
+                f"(shortfall {worst['shortfall']} units, "
+                f"${worst['lost_revenue']:.2f} revenue at risk, "
+                f"{worst['margin_pct']:.1f}% margin)"
+            )
+        # Per-product margin overview
+        items_for_margin = get_items()
+        margin_ranked = sorted(
+            [
+                {
+                    "item": i["name"],
+                    "margin_pct": round(
+                        (i["price"] - i["unit_cost"]) / i["price"] * 100, 1
+                    ) if i["price"] > 0 else 0.0,
+                    "price": i["price"],
+                    "unit_cost": i["unit_cost"],
+                }
+                for i in items_for_margin
+            ],
+            key=lambda x: x["margin_pct"],
+            reverse=True,
+        )
+        if margin_ranked:
+            best  = margin_ranked[0]
+            worst_margin = margin_ranked[-1]
+            fin_lines.append(
+                f"- Highest margin item: {best['item']} "
+                f"({best['margin_pct']:.1f}% margin, "
+                f"${best['price']:.2f} sell / ${best['unit_cost']:.2f} cost)"
+            )
+            fin_lines.append(
+                f"- Lowest margin item: {worst_margin['item']} "
+                f"({worst_margin['margin_pct']:.1f}% margin, "
+                f"${worst_margin['price']:.2f} sell / ${worst_margin['unit_cost']:.2f} cost)"
+            )
     except Exception:
         pass
 
@@ -133,38 +217,65 @@ NOTE: The static config above is the baseline. Live signals below were applied o
 LIVE REAL-WORLD SIGNALS (these directly adjusted all predictions):
 {chr(10).join(live_lines)}
 
-EXACT PREDICTION MATH (how every demand-change % was calculated):
-{chr(10).join(breakdown_lines)}
+FINANCIALS & DAILY PERFORMANCE:
+{chr(10).join(fin_lines)}
 
-FINANCIALS:
+STOCK VALUE & WEEKLY OUTLOOK:
 - Total stock value (at cost): ${total_stock_value:.2f}
-- Total projected weekly revenue (at predicted demand): ${total_potential:.2f}"""
+- Total projected weekly revenue (at predicted demand): ${total_potential:.2f}
+
+EXACT PREDICTION MATH (how every demand-change % was calculated):
+{chr(10).join(breakdown_lines)}"""
 
 
-SYSTEM_PROMPT = """You are A.U.R.A., a store assistant for a gas station convenience store manager.
+SYSTEM_PROMPT = """You are A.U.R.A. — the intelligent business advisor for a gas station convenience store manager.
+
+Your expertise covers inventory management, demand forecasting, revenue and profit analysis, stockout risk, margin optimization, and overall business health assessment.
 
 Rules:
-- Keep answers SHORT. 2-4 sentences max unless the user asks for detail.
-- Use plain language. No bullet points, no headers, no emojis, no marketing speak.
-- ALWAYS cite exact numbers from the store data. Never say "factors" vaguely — name them.
-- When asked about a prediction or demand change, quote the exact percentages from the EXACT PREDICTION MATH section.
-- When asked about weather, use ONLY the authoritative weather line and the live forecast data. Never contradict it with the static config label.
-- Never say "Great question!" or add filler. Get straight to the point.
-- If you don't have the data, say so in one sentence.
-- Example of good answer: "Red Bull White Peach is +39% because the static base adds up to +63% (weather +18%, gas +10%, traffic +20%, trend +15%), then the live cold forecast knocked it down -24%, landing at +39%, which predicts 35 units sold against 20 in stock."
-- Example of bad answer: "The predictions are based on demand trends and market conditions." — never be this vague."""
+- ALWAYS cite exact numbers. Quote specific percentages, dollar amounts, and unit counts directly from the data.
+- When asked about a prediction or demand change, quote the exact percentages from the EXACT PREDICTION MATH section — explain the static base AND the live adjustment separately.
+- When asked about weather, use ONLY the Authoritative Weather line and live forecast data. Never cite the static config label as current conditions.
+- When asked about business health, profitability, or "how am I doing", structure your answer: today's financials first, then stockout risks, then one clear action to take.
+- When asked "what can I improve", identify the single highest-impact opportunity: biggest stockout risk, lowest-margin item, or a strong demand signal being missed.
+- When asked about revenue or profit, use the FINANCIALS & DAILY PERFORMANCE section for today's actuals and the inventory projected figures for weekly outlook.
+- Be concise but data-rich. 2–4 sentences for simple questions. 4–8 sentences for health, analysis, or improvement questions.
+- Never say "Great question!", "Certainly!", or any filler. Get directly to the data.
+- If you don't have specific data, say so in one sentence and pivot to what you do have.
+
+Good example: "Your margin today is 48.6% on $45.50 revenue — solid. Biggest risk is Red Bull Cherry Sakura: 14-unit shortfall projects $69.86 in lost revenue this week. Restock both Red Bull SKUs before tomorrow; together they represent your highest weekly revenue potential."
+Bad example: "Your business is performing well based on current market conditions." — never this vague."""
 
 
 def chat(user_message, model=None):
     """Send a message to Claude with full store context."""
+    action, action_data = _detect_action(user_message)
+
     if not LAVA_FORWARD_TOKEN:
         return {
             "response": "AI chatbot is not configured. Set LAVA_FORWARD_TOKEN to enable.",
             "model": "none",
+            "action": action,
+            "action_data": action_data,
         }
 
     model = model or DEFAULT_MODEL
     store_context = _build_store_context()
+
+    # Augment the message so the AI knows what action was triggered
+    if action == "open_report":
+        user_message = (
+            user_message
+            + "\n\n[System: A full business report has been generated and is now displayed "
+            "to the user. Acknowledge it briefly in 1-2 sentences and offer to explain any metric.]"
+        )
+    elif action == "show_forecast":
+        item = (action_data or {}).get("item", "")
+        user_message = (
+            user_message
+            + f"\n\n[System: The demand forecast for '{item}' has been highlighted in the report. "
+            "Reference the exact numbers from the EXACT PREDICTION MATH section.]"
+        )
 
     target_url = "https://api.anthropic.com/v1/messages"
     lava_url = f"https://api.lava.so/v1/forward?u={quote(target_url, safe='')}"
@@ -193,12 +304,14 @@ def chat(user_message, model=None):
         data = response.json()
 
         text = data["content"][0]["text"].strip()
-        return {"response": text, "model": model}
+        return {"response": text, "model": model, "action": action, "action_data": action_data}
 
     except Exception as e:
         return {
             "response": f"Sorry, I couldn't process that right now. Error: {str(e)}",
             "model": model,
+            "action": action,
+            "action_data": action_data,
         }
 
 
