@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.jsx";
 import EmployeePage from "./pages/EmployeePage.jsx";
 import ModuleSelectionPage from "./pages/ModuleSelectionPage.jsx";
+import MetricsPage from "./pages/MetricsPage.jsx";
 import OmniCropPage from "./pages/OmniCropPage.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -13,11 +14,17 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<ModuleSelectionPage />} />
         <Route path="/modules/convenience-store" element={<App />} />
+        <Route
+          path="/modules/convenience-store/metrics"
+          element={<MetricsPage />}
+        />
         <Route path="/modules/omnicrop" element={<OmniCropPage />} />
         <Route path="/employee" element={<EmployeePage />} />
         <Route
           path="/metrics"
-          element={<Navigate to="/modules/convenience-store" replace />}
+          element={
+            <Navigate to="/modules/convenience-store/metrics" replace />
+          }
         />
       </Routes>
     </BrowserRouter>
