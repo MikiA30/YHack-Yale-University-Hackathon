@@ -137,6 +137,8 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     model: str
+    action: str | None = None
+    action_data: dict | None = None
 
 
 class SetLocationRequest(BaseModel):
@@ -202,6 +204,29 @@ class EodSummaryResponse(BaseModel):
     total_projected_lost_revenue: float
     total_projected_lost_profit: float
     restock_actions: list[RestockAction]
+
+
+class ReportSummary(BaseModel):
+    total_items: int
+    total_alerts: int
+    today_revenue: float
+    today_profit: float
+    today_margin_pct: float
+    projected_lost_revenue: float
+    projected_lost_profit: float
+
+
+class ReportResponse(BaseModel):
+    generated_at: str
+    store: dict
+    summary: ReportSummary
+    forecast: list
+    revenue_data: list
+    top_sellers: list
+    stockout_risks: list
+    recommendations: list
+    alerts: list
+    live_signals: dict
 
 
 class LiveSignalDetail(BaseModel):

@@ -2,6 +2,7 @@
 
 from ai_profiler import generate_product_profile
 from live_factors import get_live_factors, get_store_location, set_store_location, geocode_zip
+from report import generate_report
 from chatbot import chat as ai_chat
 from chatbot import explain_store as ai_explain_store
 from finance import record_sale, get_daily_financials, get_stockout_losses, get_eod_summary
@@ -32,6 +33,7 @@ from schemas import (
     ChatResponse,
     DismissRequest,
     EodSummaryResponse,
+    ReportResponse,
     ExplanationResponse,
     FinancialsResponse,
     InventoryResponse,
@@ -58,6 +60,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/report", response_model=ReportResponse)
+def report():
+    return generate_report()
 
 
 @app.get("/live_signals", response_model=LiveSignalsResponse)

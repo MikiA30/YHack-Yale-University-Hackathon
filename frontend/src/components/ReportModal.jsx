@@ -24,39 +24,44 @@ const abbrev = (name) => {
 };
 
 const CHART_THEME = {
-  cartesian: "#334155",
-  tick: { fill: "#94a3b8", fontSize: 11 },
+  cartesian: "#E5E7EB",
+  tick: { fill: "#9CA3AF", fontSize: 11 },
   tooltip: {
     contentStyle: {
-      backgroundColor: "#1e293b",
-      border: "1px solid #334155",
+      backgroundColor: "#ffffff",
+      border: "1px solid #E5E7EB",
       borderRadius: "8px",
-      color: "#e2e8f0",
+      color: "#111827",
       fontSize: 12,
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.07)",
     },
-    cursor: { fill: "rgba(99,102,241,0.08)" },
+    cursor: { fill: "rgba(0,0,0,0.03)" },
   },
 };
 
 const recBadge = {
-  "Buy More": "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
-  "Buy Less": "bg-red-500/10 border-red-500/30 text-red-400",
-  Hold: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+  "Buy More": "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  "Buy Less": "bg-red-50 text-red-700 border border-red-200",
+  Hold: "bg-gray-100 text-gray-500 border border-gray-200",
 };
 
-function StatCard({ label, value, sub, valueColor = "text-white" }) {
+function StatCard({ label, value, sub, valueColor = "text-gray-900" }) {
   return (
-    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className={`text-xl font-bold mt-0.5 ${valueColor}`}>{value}</p>
-      {sub && <p className="text-xs text-slate-500 mt-0.5">{sub}</p>}
+    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+        {label}
+      </p>
+      <p className={`text-xl font-bold mt-0.5 tabular-nums ${valueColor}`}>
+        {value}
+      </p>
+      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
     </div>
   );
 }
 
 function SectionTitle({ children }) {
   return (
-    <h2 className="text-lg font-semibold text-slate-200 mb-4 pt-2">
+    <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4 pt-2">
       {children}
     </h2>
   );
@@ -444,17 +449,17 @@ export default function ReportModal({ open, onClose, scrollTo }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] overflow-y-auto">
       <div className="min-h-screen flex items-start justify-center py-8 px-4">
-        <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl">
+        <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-5xl shadow-2xl">
           {/* ── modal header ── */}
-          <div className="sticky top-0 z-10 bg-slate-900 border-b border-slate-700/50 rounded-t-2xl px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-gray-200 rounded-t-2xl px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <AuraLogo size={32} />
               <div>
-                <h1 className="text-lg font-bold text-white">
+                <h1 className="text-lg font-bold text-gray-900">
                   Business Report
                 </h1>
                 {report && (
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-400">
                     {report.store.name} · {report.store.location} ·{" "}
                     {report.generated_at}
                   </p>
@@ -466,7 +471,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                 <>
                   <button
                     onClick={() => exportPDF(report)}
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-medium transition-colors"
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 font-medium transition-all duration-150 active:scale-[0.97]"
                   >
                     <svg
                       className="w-3.5 h-3.5"
@@ -485,7 +490,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   </button>
                   <button
                     onClick={() => exportExcel(report)}
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors"
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition-all duration-150 active:scale-[0.97]"
                   >
                     <svg
                       className="w-3.5 h-3.5"
@@ -506,7 +511,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
               )}
               <button
                 onClick={onClose}
-                className="ml-1 text-slate-400 hover:text-white text-xl leading-none transition-colors"
+                className="ml-1 w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-150 text-lg leading-none"
               >
                 &times;
               </button>
@@ -514,7 +519,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
           </div>
 
           {/* ── body ── */}
-          <div className="px-6 py-6 space-y-10">
+          <div className="px-6 py-6 space-y-10 bg-gray-50/30">
             {loading && (
               <div className="flex items-center justify-center py-24">
                 <div className="text-center space-y-3">
@@ -537,14 +542,14 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                       d="M4 12a8 8 0 018-8v8H4z"
                     />
                   </svg>
-                  <p className="text-slate-400 text-sm">Generating report…</p>
+                  <p className="text-gray-400 text-sm">Generating report…</p>
                 </div>
               </div>
             )}
 
             {error && (
               <div className="text-center py-16">
-                <p className="text-red-400">{error}</p>
+                <p className="text-red-600 font-medium">{error}</p>
               </div>
             )}
 
@@ -557,35 +562,35 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                     <StatCard
                       label="Today Revenue"
                       value={fmt$(report.summary.today_revenue)}
-                      valueColor="text-emerald-400"
+                      valueColor="text-emerald-600"
                     />
                     <StatCard
                       label="Today Profit"
                       value={fmt$(report.summary.today_profit)}
-                      valueColor="text-violet-400"
+                      valueColor="text-gray-900"
                     />
                     <StatCard
                       label="Margin"
                       value={fmtPct(report.summary.today_margin_pct)}
-                      valueColor="text-sky-400"
+                      valueColor="text-sky-600"
                     />
                     <StatCard
                       label="Lost Revenue Risk"
                       value={fmt$(report.summary.projected_lost_revenue)}
-                      valueColor="text-red-400"
+                      valueColor="text-red-600"
                     />
                     <StatCard
                       label="Lost Profit Risk"
                       value={fmt$(report.summary.projected_lost_profit)}
-                      valueColor="text-amber-400"
+                      valueColor="text-amber-600"
                     />
                     <StatCard
                       label="Active Alerts"
                       value={report.summary.total_alerts}
                       valueColor={
                         report.summary.total_alerts > 0
-                          ? "text-red-400"
-                          : "text-emerald-400"
+                          ? "text-red-600"
+                          : "text-emerald-600"
                       }
                     />
                   </div>
@@ -596,7 +601,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   <SectionTitle>
                     Demand Forecast — Current Stock vs Predicted
                   </SectionTitle>
-                  <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart
                         data={report.forecast.map((f) => ({
@@ -620,7 +625,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                         <Tooltip {...CHART_THEME.tooltip} />
                         <Legend
                           wrapperStyle={{
-                            color: "#94a3b8",
+                            color: "#6B7280",
                             fontSize: 12,
                             paddingTop: 16,
                           }}
@@ -647,7 +652,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   <SectionTitle>
                     Projected Weekly Revenue & Profit (Top Items)
                   </SectionTitle>
-                  <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart
                         data={report.revenue_data
@@ -676,7 +681,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                         />
                         <Legend
                           wrapperStyle={{
-                            color: "#94a3b8",
+                            color: "#6B7280",
                             fontSize: 12,
                             paddingTop: 16,
                           }}
@@ -690,7 +695,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                         <Bar
                           dataKey="projected_weekly_profit"
                           name="Proj. Profit"
-                          fill="#8b5cf6"
+                          fill="#6366f1"
                           radius={[4, 4, 0, 0]}
                         />
                       </BarChart>
@@ -701,20 +706,20 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                 {/* ── 4. Top Sellers ── */}
                 <section>
                   <SectionTitle>Top Sellers by Projected Revenue</SectionTitle>
-                  <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden">
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-700/50">
-                          <th className="text-left px-5 py-3 text-xs text-slate-400 font-medium">
+                        <tr className="border-b border-gray-100 bg-gray-50/70">
+                          <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                             Product
                           </th>
-                          <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                          <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                             Price
                           </th>
-                          <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                          <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                             Proj. Revenue
                           </th>
-                          <th className="text-right px-5 py-3 text-xs text-slate-400 font-medium">
+                          <th className="text-right px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                             Proj. Profit
                           </th>
                         </tr>
@@ -723,18 +728,18 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                         {report.top_sellers.map((s, i) => (
                           <tr
                             key={s.item}
-                            className={`border-b border-slate-700/30 ${i % 2 ? "bg-slate-700/10" : ""}`}
+                            className={`border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors duration-100 ${i % 2 ? "bg-gray-50/30" : "bg-white"}`}
                           >
-                            <td className="px-5 py-3 text-white font-medium">
+                            <td className="px-5 py-3.5 font-semibold text-gray-900">
                               {s.item}
                             </td>
-                            <td className="px-4 py-3 text-right text-slate-300">
+                            <td className="px-4 py-3.5 text-right text-gray-600 tabular-nums">
                               {fmt$(s.price)}
                             </td>
-                            <td className="px-4 py-3 text-right text-emerald-400 font-medium">
+                            <td className="px-4 py-3.5 text-right text-emerald-600 font-semibold tabular-nums">
                               {fmt$(s.projected_weekly_revenue)}
                             </td>
-                            <td className="px-5 py-3 text-right text-violet-400 font-medium">
+                            <td className="px-5 py-3.5 text-right text-gray-700 font-semibold tabular-nums">
                               {fmt$(s.projected_weekly_profit)}
                             </td>
                           </tr>
@@ -748,32 +753,32 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                 <section>
                   <SectionTitle>Stockout Risks</SectionTitle>
                   {report.stockout_risks.length === 0 ? (
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 text-center">
-                      <p className="text-emerald-400 font-medium">
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 text-center">
+                      <p className="text-emerald-700 font-semibold">
                         No stockout risk — all items have sufficient stock ✓
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden">
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-slate-700/50">
-                            <th className="text-left px-5 py-3 text-xs text-slate-400 font-medium">
+                          <tr className="border-b border-gray-100 bg-gray-50/70">
+                            <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Product
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               In Stock
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Predicted
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Shortfall
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Lost Revenue
                             </th>
-                            <th className="text-right px-5 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Lost Profit
                             </th>
                           </tr>
@@ -782,24 +787,24 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                           {report.stockout_risks.map((s, i) => (
                             <tr
                               key={s.item}
-                              className={`border-b border-slate-700/30 ${i % 2 ? "bg-slate-700/10" : ""}`}
+                              className={`border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors duration-100 ${i % 2 ? "bg-gray-50/30" : "bg-white"}`}
                             >
-                              <td className="px-5 py-3 text-white font-medium">
+                              <td className="px-5 py-3.5 font-semibold text-gray-900">
                                 {s.item}
                               </td>
-                              <td className="px-4 py-3 text-right text-slate-300">
+                              <td className="px-4 py-3.5 text-right text-gray-600 tabular-nums">
                                 {s.current_stock}
                               </td>
-                              <td className="px-4 py-3 text-right text-slate-300">
+                              <td className="px-4 py-3.5 text-right text-gray-600 tabular-nums">
                                 {s.predicted_demand}
                               </td>
-                              <td className="px-4 py-3 text-right text-red-400 font-medium">
-                                -{s.shortfall}
+                              <td className="px-4 py-3.5 text-right text-red-600 font-semibold tabular-nums">
+                                −{s.shortfall}
                               </td>
-                              <td className="px-4 py-3 text-right text-red-400 font-medium">
+                              <td className="px-4 py-3.5 text-right text-red-600 font-semibold tabular-nums">
                                 {fmt$(s.lost_revenue)}
                               </td>
-                              <td className="px-5 py-3 text-right text-amber-400">
+                              <td className="px-5 py-3.5 text-right text-amber-600 tabular-nums">
                                 {fmt$(s.lost_profit)}
                               </td>
                             </tr>
@@ -814,29 +819,29 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                 <section>
                   <SectionTitle>Action Recommendations</SectionTitle>
                   {report.recommendations.length === 0 ? (
-                    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 text-center">
-                      <p className="text-slate-400">
+                    <div className="bg-white border border-gray-200 rounded-xl p-5 text-center shadow-sm">
+                      <p className="text-gray-500">
                         All items are on Hold — no immediate action needed.
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden">
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-slate-700/50">
-                            <th className="text-left px-5 py-3 text-xs text-slate-400 font-medium">
+                          <tr className="border-b border-gray-100 bg-gray-50/70">
+                            <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Product
                             </th>
-                            <th className="text-left px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Action
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Demand Change
                             </th>
-                            <th className="text-right px-4 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               In Stock
                             </th>
-                            <th className="text-right px-5 py-3 text-xs text-slate-400 font-medium">
+                            <th className="text-right px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Predicted
                             </th>
                           </tr>
@@ -845,28 +850,28 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                           {report.recommendations.map((r, i) => (
                             <tr
                               key={r.item}
-                              className={`border-b border-slate-700/30 ${i % 2 ? "bg-slate-700/10" : ""}`}
+                              className={`border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors duration-100 ${i % 2 ? "bg-gray-50/30" : "bg-white"}`}
                             >
-                              <td className="px-5 py-3 text-white font-medium">
+                              <td className="px-5 py-3.5 font-semibold text-gray-900">
                                 {r.item}
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="px-4 py-3.5">
                                 <span
-                                  className={`text-xs px-2 py-0.5 rounded-full border font-medium ${recBadge[r.action] ?? recBadge["Hold"]}`}
+                                  className={`inline-flex items-center text-xs px-2.5 py-0.5 rounded-full font-medium ${recBadge[r.action] ?? recBadge["Hold"]}`}
                                 >
                                   {r.action}
                                 </span>
                               </td>
                               <td
-                                className={`px-4 py-3 text-right font-medium ${r.demand_change_pct >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                                className={`px-4 py-3.5 text-right font-semibold tabular-nums ${r.demand_change_pct >= 0 ? "text-emerald-600" : "text-red-600"}`}
                               >
                                 {r.demand_change_pct > 0 ? "+" : ""}
                                 {r.demand_change_pct}%
                               </td>
-                              <td className="px-4 py-3 text-right text-slate-300">
+                              <td className="px-4 py-3.5 text-right text-gray-600 tabular-nums">
                                 {r.current_stock}
                               </td>
-                              <td className="px-5 py-3 text-right text-slate-300">
+                              <td className="px-5 py-3.5 text-right text-gray-600 tabular-nums">
                                 {r.predicted_demand}
                               </td>
                             </tr>
@@ -883,31 +888,31 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                     <SectionTitle>Live Market Signals</SectionTitle>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {report.live_signals.weather && (
-                        <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
-                          <p className="text-xs text-sky-400 font-medium mb-1">
+                        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                          <p className="text-xs font-semibold text-sky-600 mb-1.5">
                             🌤 Weather Forecast
                           </p>
-                          <p className="text-sm text-slate-300">
+                          <p className="text-sm text-gray-600">
                             {report.live_signals.weather}
                           </p>
                         </div>
                       )}
                       {report.live_signals.economic && (
-                        <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
-                          <p className="text-xs text-amber-400 font-medium mb-1">
+                        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                          <p className="text-xs font-semibold text-amber-600 mb-1.5">
                             📈 Economic Signal
                           </p>
-                          <p className="text-sm text-slate-300">
+                          <p className="text-sm text-gray-600">
                             {report.live_signals.economic}
                           </p>
                         </div>
                       )}
                       {report.live_signals.events && (
-                        <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
-                          <p className="text-xs text-violet-400 font-medium mb-1">
+                        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                          <p className="text-xs font-semibold text-indigo-600 mb-1.5">
                             📰 News Events
                           </p>
-                          <p className="text-sm text-slate-300">
+                          <p className="text-sm text-gray-600">
                             {report.live_signals.events}
                           </p>
                         </div>
