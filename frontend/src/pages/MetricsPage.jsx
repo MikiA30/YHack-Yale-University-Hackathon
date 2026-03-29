@@ -123,7 +123,7 @@ export default function MetricsPage() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <a
-              href="/"
+              href="/modules/convenience-store"
               className="px-3.5 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100/70 transition-all duration-150"
             >
               ← Dashboard

@@ -20,8 +20,14 @@ export default function Header() {
             Module: Convenience Store
           </span>
           <a
-            href="/"
+            href="/modules/convenience-store/metrics"
             className="text-xs px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors"
+          >
+            Metrics
+          </a>
+          <a
+            href="/"
+            className="text-xs px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
           >
             Modules
           </a>
