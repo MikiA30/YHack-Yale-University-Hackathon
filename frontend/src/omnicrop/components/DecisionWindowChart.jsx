@@ -15,17 +15,17 @@ function DecisionWindowChart({ data }) {
   );
 
   return (
-    <section className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-5">
+    <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">
             Decision Window
           </p>
-          <h3 className="mt-2 text-xl font-semibold text-slate-200">
+          <h3 className="mt-2 text-xl font-semibold text-gray-900">
             Best operating window over the next 7 days
           </h3>
         </div>
-        <div className="rounded-lg bg-slate-700 px-4 py-3 text-right text-violet-300">
+        <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 text-right text-violet-700">
           <p className="text-xs font-semibold uppercase tracking-[0.18em]">
             Best day
           </p>
@@ -53,18 +53,18 @@ function DecisionWindowChart({ data }) {
                 <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.04} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="#334155" vertical={false} />
+            <CartesianGrid stroke="#E5E7EB" vertical={false} />
             <XAxis
               dataKey="label"
               tickLine={false}
               axisLine={false}
-              stroke="#94a3b8"
+              stroke="#9CA3AF"
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               width={40}
-              stroke="#94a3b8"
+              stroke="#9CA3AF"
             />
             <Tooltip
               formatter={(value) => [`${value}`, "Score"]}
@@ -84,7 +84,7 @@ function DecisionWindowChart({ data }) {
               y={bestPoint.score}
               r={6}
               fill="#8b5cf6"
-              stroke="#0f172a"
+              stroke="#ffffff"
               strokeWidth={2}
             />
           </AreaChart>

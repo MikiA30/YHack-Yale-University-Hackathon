@@ -15,8 +15,8 @@ import { defaultFormValues } from "../omnicrop/lib/demoData";
 
 function PlaceholderPanel({ title, body }) {
   return (
-    <section className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-8 text-center text-slate-300">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <section className="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-600 shadow-sm">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">
         {title}
       </p>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6">{body}</p>
@@ -135,26 +135,26 @@ export default function OmniCropPage() {
   const recommendedScenario = result?.scenarios?.[0]?.label;
   const statusTone =
     backendStatus === "online"
-      ? "bg-emerald-400/10 text-emerald-300 border border-emerald-400/30"
-      : "bg-amber-400/10 text-amber-300 border border-amber-400/30";
+      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+      : "bg-amber-50 text-amber-700 border border-amber-200";
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-200">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <main className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <a
             href="/"
-            className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-500"
+            className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-gray-50 hover:text-gray-900"
           >
             Modules
           </a>
-          <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+          <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gray-700">
             A.U.R.A.
           </span>
-          <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
+          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
             Module: OmniCrop
           </span>
-          <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300">
+          <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-600">
             Demo Mode
           </span>
           <span
@@ -165,7 +165,7 @@ export default function OmniCropPage() {
               : "Fallback ready"}
           </span>
           {usingFallback ? (
-            <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300">
+            <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-600">
               Showing demo data
             </span>
           ) : null}
@@ -175,7 +175,7 @@ export default function OmniCropPage() {
           <OmniCropHeader />
 
           {notice ? (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
               {notice}
             </div>
           ) : null}
@@ -214,10 +214,10 @@ export default function OmniCropPage() {
               <section className="space-y-4">
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">
                       Scenario Comparison
                     </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-slate-200">
+                    <h2 className="mt-2 text-2xl font-semibold text-gray-900">
                       Compare likely planting paths
                     </h2>
                   </div>

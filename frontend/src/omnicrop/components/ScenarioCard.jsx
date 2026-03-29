@@ -1,25 +1,25 @@
 function ScenarioCard({ scenario, highlighted }) {
   const riskTone = {
-    Low: "bg-emerald-400/10 text-emerald-300 border border-emerald-400/30",
-    Medium: "bg-amber-400/10 text-amber-300 border border-amber-400/30",
+    Low: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    Medium: "bg-amber-50 text-amber-700 border border-amber-200",
     "Medium-High":
-      "bg-orange-400/10 text-orange-300 border border-orange-400/30",
-    High: "bg-red-400/10 text-red-300 border border-red-400/30",
+      "bg-orange-50 text-orange-700 border border-orange-200",
+    High: "bg-red-50 text-red-700 border border-red-200",
   };
 
   return (
     <article
       className={`rounded-xl border p-5 transition ${
         highlighted
-          ? "border-violet-500 bg-slate-800 text-white"
-          : "border-slate-700/50 bg-slate-800/60 text-slate-200"
+          ? "border-gray-900 bg-gray-900 text-white shadow-sm"
+          : "border-gray-200 bg-white text-gray-900 shadow-sm"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p
             className={`text-sm font-semibold uppercase tracking-[0.18em] ${
-              highlighted ? "text-violet-300" : "text-slate-400"
+              highlighted ? "text-gray-300" : "text-gray-400"
             }`}
           >
             Scenario
@@ -28,14 +28,14 @@ function ScenarioCard({ scenario, highlighted }) {
         </div>
         <div className="text-right">
           <p
-            className={`text-xs uppercase tracking-[0.18em] ${highlighted ? "text-slate-300" : "text-slate-400"}`}
+            className={`text-xs uppercase tracking-[0.18em] ${highlighted ? "text-gray-300" : "text-gray-400"}`}
           >
             Score
           </p>
           <p className="mt-1 text-3xl font-semibold">{scenario.score}</p>
           {!highlighted && scenario.delta_from_best > 0 ? (
             <p
-              className={`mt-1 text-xs font-medium ${highlighted ? "text-slate-300" : "text-slate-500"}`}
+              className={`mt-1 text-xs font-medium ${highlighted ? "text-gray-300" : "text-gray-500"}`}
             >
               {scenario.delta_from_best} behind top path
             </p>
@@ -47,14 +47,14 @@ function ScenarioCard({ scenario, highlighted }) {
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
             highlighted
-              ? "bg-violet-600/20 text-violet-200 border border-violet-500/30"
+              ? "border border-white/20 bg-white/10 text-white"
               : riskTone[scenario.risk_level]
           }`}
         >
           {scenario.risk_level} risk
         </span>
         {highlighted ? (
-          <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs font-semibold text-violet-200">
+          <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
             Recommended
           </span>
         ) : null}
@@ -62,7 +62,7 @@ function ScenarioCard({ scenario, highlighted }) {
 
       {scenario.crop ? (
         <div
-          className={`mt-4 flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.16em] ${highlighted ? "text-slate-300" : "text-slate-400"}`}
+          className={`mt-4 flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.16em] ${highlighted ? "text-gray-300" : "text-gray-400"}`}
         >
           <span>{scenario.crop}</span>
           <span>
@@ -74,7 +74,7 @@ function ScenarioCard({ scenario, highlighted }) {
       ) : null}
 
       <p
-        className={`mt-4 text-sm leading-6 ${highlighted ? "text-slate-300" : "text-slate-400"}`}
+        className={`mt-4 text-sm leading-6 ${highlighted ? "text-gray-300" : "text-gray-500"}`}
       >
         {scenario.summary}
       </p>

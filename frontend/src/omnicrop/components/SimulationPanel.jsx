@@ -1,8 +1,8 @@
 function SegmentedOptions({ label, value, options, onChange, columns = 3 }) {
   return (
-    <div className="space-y-3 rounded-lg border border-slate-700 bg-slate-700/60 p-4">
+    <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
           {label}
         </p>
       </div>
@@ -16,8 +16,8 @@ function SegmentedOptions({ label, value, options, onChange, columns = 3 }) {
               key={option.value}
               className={`rounded-2xl border px-3 py-3 text-sm font-medium transition ${
                 active
-                  ? "border-violet-500 bg-violet-600 text-white"
-                  : "border-slate-600 bg-slate-800 text-slate-200 hover:border-slate-500"
+                  ? "border-gray-900 bg-gray-900 text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
               }`}
               type="button"
               onClick={() => onChange(option.value)}
@@ -41,17 +41,17 @@ function SliderControl({
   formatValue,
 }) {
   return (
-    <div className="space-y-4 rounded-lg border border-slate-700 bg-slate-700/60 p-4">
+    <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
           {label}
         </p>
-        <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white">
+        <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
           {formatValue(value)}
         </span>
       </div>
       <input
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-800 accent-violet-500"
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-gray-900"
         type="range"
         min={min}
         max={max}
@@ -77,16 +77,16 @@ function SimulationPanel({
     adjustments.field_readiness_override ?? baseFieldReadiness;
 
   return (
-    <section className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-6 text-white">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
             Scenario Simulator
           </p>
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
             Adjust the assumptions and rerun the decision live
           </h2>
-          <p className="max-w-2xl text-sm leading-6 text-slate-300">
+          <p className="max-w-2xl text-sm leading-6 text-gray-500">
             OmniCrop applies these changes to the last normalized analysis
             context. No external providers are called while you operate the
             simulator.
@@ -94,7 +94,7 @@ function SimulationPanel({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200">
+          <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600">
             {isSimulating
               ? "Simulation updating..."
               : isSimulationDirty
@@ -102,7 +102,7 @@ function SimulationPanel({
                 : "Using baseline analysis"}
           </span>
           <button
-            className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-600"
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
             type="button"
             onClick={onReset}
             disabled={!enabled}
@@ -113,7 +113,7 @@ function SimulationPanel({
       </div>
 
       {!enabled ? (
-        <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+        <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
           Simulation is available after a backend-backed analysis. If OmniCrop
           is running on local fallback demo data only, the simulator stays
           disabled.
@@ -121,7 +121,7 @@ function SimulationPanel({
       ) : null}
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
           {error}
         </div>
       ) : null}
@@ -173,12 +173,12 @@ function SimulationPanel({
           onChange={(value) => onAdjustmentChange("market_outlook", value)}
         />
 
-        <div className="space-y-3 rounded-lg border border-slate-700 bg-slate-700/60 p-4">
+        <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
               Field Readiness
             </p>
-            <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white">
+            <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
               {effectiveFieldReadiness}
             </span>
           </div>
@@ -190,8 +190,8 @@ function SimulationPanel({
                   key={option}
                   className={`rounded-2xl border px-3 py-3 text-sm font-medium transition ${
                     active
-                      ? "border-violet-500 bg-violet-600 text-white"
-                      : "border-slate-600 bg-slate-800 text-slate-200 hover:border-slate-500"
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                   }`}
                   type="button"
                   onClick={() =>

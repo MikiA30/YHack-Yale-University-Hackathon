@@ -65,7 +65,7 @@ export default function ChatPanel({ analysis }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg transition-shadow hover:shadow-xl"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-shadow hover:shadow-xl"
       >
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -75,19 +75,19 @@ export default function ChatPanel({ analysis }) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex h-[32rem] w-96 flex-col rounded-2xl border border-slate-700 bg-slate-800 shadow-2xl">
-      <div className="flex items-center justify-between border-b border-slate-700 px-4 py-3">
+    <div className="fixed bottom-6 right-6 z-50 flex h-[32rem] w-96 flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl">
+      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-900 text-xs font-bold text-white">
             A
           </div>
-          <span className="text-sm font-semibold text-white">A.U.R.A. Chat</span>
+          <span className="text-sm font-semibold text-gray-900">A.U.R.A. Chat</span>
         </div>
         <div className="flex items-center gap-2">
           <select
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            className="rounded border border-slate-600 bg-slate-700 px-2 py-1 text-xs text-slate-300 focus:outline-none"
+            className="rounded border border-gray-200 bg-white px-2 py-1 text-xs text-gray-600 focus:outline-none"
           >
             {MODELS.map((item) => (
               <option key={item.id} value={item.id}>
@@ -97,7 +97,7 @@ export default function ChatPanel({ analysis }) {
           </select>
           <button
             onClick={() => setOpen(false)}
-            className="text-lg leading-none text-slate-400 hover:text-white"
+            className="text-lg leading-none text-gray-400 hover:text-gray-900"
           >
             &times;
           </button>
@@ -106,9 +106,9 @@ export default function ChatPanel({ analysis }) {
 
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
         {messages.length === 0 ? (
-          <div className="mt-8 space-y-2 text-center text-sm text-slate-500">
+          <div className="mt-8 space-y-2 text-center text-sm text-gray-500">
             <p>Ask me about the current harvest recommendation.</p>
-            <div className="space-y-1 text-xs text-slate-600">
+            <div className="space-y-1 text-xs text-gray-400">
               <p>"Should I plant now or wait?"</p>
               <p>"What is the biggest harvest risk?"</p>
               <p>"Why is corn ahead of soybeans?"</p>
@@ -125,8 +125,8 @@ export default function ChatPanel({ analysis }) {
             <div
               className={`max-w-[80%] overflow-hidden rounded-xl px-3 py-2 text-sm break-words ${
                 msg.role === "user"
-                  ? "bg-violet-600 text-white"
-                  : "bg-slate-700 text-slate-200"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               <p className="whitespace-pre-wrap break-words">{msg.text}</p>
@@ -136,7 +136,7 @@ export default function ChatPanel({ analysis }) {
 
         {loading ? (
           <div className="flex justify-start">
-            <div className="rounded-xl bg-slate-700 px-3 py-2 text-sm text-slate-400">
+            <div className="rounded-xl bg-gray-100 px-3 py-2 text-sm text-gray-500">
               Thinking...
             </div>
           </div>
@@ -144,19 +144,19 @@ export default function ChatPanel({ analysis }) {
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-slate-700 px-3 py-3">
+      <div className="border-t border-gray-200 px-3 py-3">
         <div className="flex gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send()}
             placeholder="Ask about your harvest..."
-            className="flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+            className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-900 focus:outline-none"
           />
           <button
             onClick={send}
             disabled={loading || !input.trim()}
-            className="rounded-lg bg-violet-600 px-3 py-2 text-sm text-white transition-colors hover:bg-violet-500 disabled:opacity-40"
+            className="rounded-lg bg-gray-900 px-3 py-2 text-sm text-white transition-colors hover:bg-black disabled:opacity-40"
           >
             Send
           </button>
