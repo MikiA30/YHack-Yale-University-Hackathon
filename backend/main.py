@@ -1,5 +1,8 @@
 """A.U.R.A. — Adaptive Uncertainty & Risk Agent API"""
 
+import os
+from pathlib import Path
+
 from ai_profiler import generate_product_profile
 from live_factors import get_live_factors, get_store_location, set_store_location, geocode_zip
 from report import generate_report
@@ -15,8 +18,10 @@ from data import (
     remove_product,
     update_stock,
 )
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from predictor import (
     build_explanation_summary,
     calculate_predictions,
@@ -235,3 +240,18 @@ def remove_product_endpoint(req: RemoveProductRequest):
 def chat_endpoint(req: ChatRequest):
     result = ai_chat(req.message, model=req.model)
     return result
+
+
+# ── Serve frontend static files in production ────────────────────────────────
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+if STATIC_DIR.is_dir():
+    # Serve index.html for SPA routes (/, /employee, etc.)
+    @app.get("/{path:path}")
+    def serve_spa(request: Request, path: str):
+        file = STATIC_DIR / path
+        if file.is_file():
+            return FileResponse(file)
+        return FileResponse(STATIC_DIR / "index.html")
+
+    app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
