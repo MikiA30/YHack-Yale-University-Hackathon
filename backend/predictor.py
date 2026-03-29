@@ -1,7 +1,7 @@
 """Prediction engine — all math lives here, no AI involved."""
 
 from data import get_aisles, get_item, get_items, get_market_factors
-from live_factors import get_live_adjustment, get_live_factors
+from live_factors import get_live_adjustment, get_live_factors, WEATHER_SENSITIVITY
 
 
 def _get_factors(name):
@@ -155,13 +155,16 @@ def simulate(item_name, restock_qty):
         waste_risk = "none"
 
     # Revenue impact
+    unit_cost = item["unit_cost"]
     units_sold_now = min(current_stock, predicted_demand)
     units_sold_new = min(new_stock, predicted_demand)
     additional_sales = units_sold_new - units_sold_now
     revenue_gain = round(additional_sales * price, 2)
+    profit_gain  = round(additional_sales * (price - unit_cost), 2)
 
     lost_units = max(0, predicted_demand - new_stock)
     lost_revenue = round(lost_units * price, 2)
+    lost_profit  = round(lost_units * (price - unit_cost), 2)
 
     return {
         "item": item_name,
@@ -175,7 +178,9 @@ def simulate(item_name, restock_qty):
         "waste_risk": waste_risk,
         "surplus": max(0, surplus),
         "revenue_gain": revenue_gain,
+        "profit_gain": profit_gain,
         "lost_revenue": lost_revenue,
+        "lost_profit": lost_profit,
     }
 
 
@@ -213,6 +218,71 @@ def build_explanation_summary():
             for m in top_movers
         ],
     }
+
+
+def get_factor_breakdown(name: str) -> dict:
+    """Return the exact factor breakdown used to compute one item's prediction.
+
+    Shows both the static base factors (from inventory_data.json) and the live
+    real-world adjustments (weather forecast, economic, events) so the AI can
+    explain exactly how a demand-change percentage was reached.
+    """
+    item = get_item(name)
+    if not item:
+        return {}
+
+    factors  = get_market_factors()
+    weather  = factors["weather"]["impacts"].get(name, 0.0)
+    gas      = factors["gas_price"]["impacts"].get(name, 0.0)
+    traffic  = factors["traffic"]["impacts"].get(name, 0.0)
+    trend    = factors["trend"]["impacts"].get(name, 0.0)
+    base     = weather + gas + traffic + trend
+
+    category = item.get("category", "general")
+
+    # Break the live adjustment into its three sub-signals
+    w_adj = e_adj = ev_adj = 0.0
+    try:
+        live        = get_live_factors()
+        w_score     = live["weather"].get("score", 0.0)
+        sensitivity = WEATHER_SENSITIVITY.get(category, WEATHER_SENSITIVITY["general"])
+        w_adj       = w_score * sensitivity
+        e_adj       = live["economic"].get("score", 0.0) * 0.5
+        ev_adj      = live["event"].get("score",    0.0) * 0.4
+    except Exception:
+        pass
+
+    live_adj = w_adj + e_adj + ev_adj
+    total    = base + live_adj
+
+    base_demand   = item["base_weekly_demand"]
+    predicted     = round(base_demand * (1 + total))
+
+    return {
+        "item":              name,
+        "category":          category,
+        "base_weekly_demand": base_demand,
+        "base_factors": {
+            "weather":   round(weather * 100, 1),
+            "gas_price": round(gas     * 100, 1),
+            "traffic":   round(traffic * 100, 1),
+            "trend":     round(trend   * 100, 1),
+            "subtotal":  round(base    * 100, 1),
+        },
+        "live_adjustment": {
+            "weather_forecast": round(w_adj  * 100, 1),
+            "economic":         round(e_adj  * 100, 1),
+            "events":           round(ev_adj * 100, 1),
+            "subtotal":         round(live_adj * 100, 1),
+        },
+        "total_factor_pct": round(total * 100, 1),
+        "predicted_demand": predicted,
+    }
+
+
+def get_all_factor_breakdowns() -> list:
+    """Return factor breakdowns for every item currently in inventory."""
+    return [get_factor_breakdown(item["name"]) for item in get_items()]
 
 
 def generate_explanation(summary):

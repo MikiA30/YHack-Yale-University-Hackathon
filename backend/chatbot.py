@@ -9,7 +9,7 @@ import httpx
 from data import get_aisles, get_items, get_market_factors, get_store_info
 from dotenv import load_dotenv
 from live_factors import get_live_factors
-from predictor import calculate_predictions, get_alerts, get_inventory_view
+from predictor import calculate_predictions, get_alerts, get_inventory_view, get_all_factor_breakdowns
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
@@ -55,6 +55,7 @@ def _build_store_context():
     )
 
     # Live real-world signals
+    live = {}
     live_lines = ["- Live signals unavailable (using static fallback)"]
     try:
         live = get_live_factors()
@@ -70,6 +71,27 @@ def _build_store_context():
     except Exception:
         pass
 
+    # Per-item factor breakdowns — the exact math behind every prediction
+    breakdown_lines = []
+    try:
+        breakdowns = get_all_factor_breakdowns()
+        for b in breakdowns:
+            if not b:
+                continue
+            bf = b["base_factors"]
+            la = b["live_adjustment"]
+            breakdown_lines.append(
+                f"- {b['item']} ({b['category']}): "
+                f"static base = weather:{bf['weather']:+.1f}% + gas:{bf['gas_price']:+.1f}% + "
+                f"traffic:{bf['traffic']:+.1f}% + trend:{bf['trend']:+.1f}% = {bf['subtotal']:+.1f}% subtotal | "
+                f"live adjustment = forecast_weather:{la['weather_forecast']:+.1f}% + "
+                f"economic:{la['economic']:+.1f}% + events:{la['events']:+.1f}% = {la['subtotal']:+.1f}% | "
+                f"FINAL = {b['total_factor_pct']:+.1f}% demand change → {b['predicted_demand']} units predicted "
+                f"(base weekly demand: {b['base_weekly_demand']})"
+            )
+    except Exception:
+        breakdown_lines = ["- Factor breakdown unavailable"]
+
     # Revenue estimates
     total_potential = sum(
         inv_map[item["name"]]["predicted_demand"] * item["price"]
@@ -77,6 +99,18 @@ def _build_store_context():
         if item["name"] in inv_map
     )
     total_stock_value = sum(item["current_stock"] * item["unit_cost"] for item in items)
+
+    # Determine the authoritative weather description — live overrides static
+    live_weather_score = live.get("weather", {}).get("score", None)
+    if live_weather_score is not None:
+        if live_weather_score >= 0.15:
+            weather_authority = f"HOT (live forecast, overrides static label '{factors['weather']['condition']}')"
+        elif live_weather_score <= -0.15:
+            weather_authority = f"COLD (live forecast, overrides static label '{factors['weather']['condition']}')"
+        else:
+            weather_authority = f"MILD (live forecast, overrides static label '{factors['weather']['condition']}')"
+    else:
+        weather_authority = factors["weather"]["condition"] + " (static config, no live data)"
 
     return f"""STORE: {store["name"]} — {store["location"]} ({store["type"]})
 
@@ -90,13 +124,17 @@ ACTIVE ALERTS:
 {chr(10).join(alert_lines)}
 
 MARKET CONDITIONS:
-- Weather: {factors["weather"]["condition"]}
-- Gas prices: {factors["gas_price"]["trend"]}
-- Foot traffic: {factors["traffic"]["level"]}
-- Season: {factors["trend"]["season"]}
+- Authoritative weather: {weather_authority}
+- Gas prices: {factors["gas_price"]["trend"]} (static config)
+- Foot traffic: {factors["traffic"]["level"]} (static config)
+- Season: {factors["trend"]["season"]} (static config)
+NOTE: The static config above is the baseline. Live signals below were applied on top and are what actually shifted the predictions.
 
-LIVE REAL-WORLD SIGNALS (forecast-driven):
+LIVE REAL-WORLD SIGNALS (these directly adjusted all predictions):
 {chr(10).join(live_lines)}
+
+EXACT PREDICTION MATH (how every demand-change % was calculated):
+{chr(10).join(breakdown_lines)}
 
 FINANCIALS:
 - Total stock value (at cost): ${total_stock_value:.2f}
@@ -108,9 +146,13 @@ SYSTEM_PROMPT = """You are A.U.R.A., a store assistant for a gas station conveni
 Rules:
 - Keep answers SHORT. 2-4 sentences max unless the user asks for detail.
 - Use plain language. No bullet points, no headers, no emojis, no marketing speak.
-- Just answer the question with real numbers from the store data below.
+- ALWAYS cite exact numbers from the store data. Never say "factors" vaguely — name them.
+- When asked about a prediction or demand change, quote the exact percentages from the EXACT PREDICTION MATH section.
+- When asked about weather, use ONLY the authoritative weather line and the live forecast data. Never contradict it with the static config label.
 - Never say "Great question!" or add filler. Get straight to the point.
-- If you don't have the data, say so in one sentence."""
+- If you don't have the data, say so in one sentence.
+- Example of good answer: "Red Bull White Peach is +39% because the static base adds up to +63% (weather +18%, gas +10%, traffic +20%, trend +15%), then the live cold forecast knocked it down -24%, landing at +39%, which predicts 35 units sold against 20 in stock."
+- Example of bad answer: "The predictions are based on demand trends and market conditions." — never be this vague."""
 
 
 def chat(user_message, model=None):
