@@ -36,19 +36,19 @@ export default function Header() {
           </a>
           <a
             href="/"
-            className="text-xs px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-gray-50 hover:text-gray-900"
           >
             Modules
           </a>
           <a
             href="/modules/omnicrop"
-            className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-gray-50 hover:text-gray-900"
           >
             OmniCrop
           </a>
           <a
             href="/employee"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-gray-900 hover:bg-black text-white transition-all duration-150 active:scale-[0.97]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-600 transition-all duration-150 hover:bg-gray-50 hover:text-gray-900 active:scale-[0.97]"
           >
             Employee Mode
           </a>

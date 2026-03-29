@@ -256,7 +256,7 @@ export default function EmployeePage() {
           </div>
           <a
             href="/"
-            className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 font-medium transition-all duration-150"
+            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-gray-50 hover:text-gray-900"
           >
             ← Dashboard
           </a>

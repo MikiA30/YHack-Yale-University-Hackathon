@@ -11,12 +11,12 @@ import {
 
 function PriceChart({ data }) {
   return (
-    <section className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-5">
+    <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="mb-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">
           Price Trend
         </p>
-        <h3 className="mt-2 text-xl font-semibold text-slate-200">
+        <h3 className="mt-2 text-xl font-semibold text-gray-900">
           Five-day crop pricing
         </h3>
       </div>
@@ -27,18 +27,18 @@ function PriceChart({ data }) {
             data={data}
             margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
           >
-            <CartesianGrid stroke="#334155" vertical={false} />
+            <CartesianGrid stroke="#E5E7EB" vertical={false} />
             <XAxis
               dataKey="day"
               tickLine={false}
               axisLine={false}
-              stroke="#94a3b8"
+              stroke="#9CA3AF"
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               width={44}
-              stroke="#94a3b8"
+              stroke="#9CA3AF"
             />
             <Tooltip />
             <Legend />

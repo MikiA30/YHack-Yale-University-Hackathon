@@ -7,9 +7,9 @@ const SOURCE_LABELS = {
 };
 
 const SOURCE_STYLES = {
-  live: "border-emerald-400/20 bg-emerald-400/10 text-emerald-100",
-  fallback: "border-amber-300/20 bg-amber-300/10 text-amber-50",
-  failed: "border-slate-200/15 bg-white/10 text-slate-100",
+  live: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  fallback: "border-amber-200 bg-amber-50 text-amber-700",
+  failed: "border-gray-200 bg-gray-100 text-gray-600",
 };
 
 function DataQualityBadgeRow({ dataSources, compact = false }) {
