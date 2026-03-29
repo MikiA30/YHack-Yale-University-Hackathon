@@ -135,3 +135,25 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     model: str
+
+
+class SetLocationRequest(BaseModel):
+    zip_code: str
+
+
+class LocationResponse(BaseModel):
+    zip: str
+    label: str
+    lat: float
+    lon: float
+
+
+class LiveSignalDetail(BaseModel):
+    score: float
+    summary: str
+
+
+class LiveSignalsResponse(BaseModel):
+    weather: dict
+    economic: dict
+    event: dict
