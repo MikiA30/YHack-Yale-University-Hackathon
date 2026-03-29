@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    { "source": "/predict",              "destination": "https://REPLACE_WITH_RAILWAY_URL/predict" },
+    { "source": "/inventory",            "destination": "https://REPLACE_WITH_RAILWAY_URL/inventory" },
+    { "source": "/explain",              "destination": "https://REPLACE_WITH_RAILWAY_URL/explain" },
+    { "source": "/alerts",               "destination": "https://REPLACE_WITH_RAILWAY_URL/alerts" },
+    { "source": "/simulate",             "destination": "https://REPLACE_WITH_RAILWAY_URL/simulate" },
+    { "source": "/update_inventory",     "destination": "https://REPLACE_WITH_RAILWAY_URL/update_inventory" },
+    { "source": "/notify_scan",          "destination": "https://REPLACE_WITH_RAILWAY_URL/notify_scan" },
+    { "source": "/location",             "destination": "https://REPLACE_WITH_RAILWAY_URL/location" },
+    { "source": "/set_location",         "destination": "https://REPLACE_WITH_RAILWAY_URL/set_location" },
+    { "source": "/live_signals",         "destination": "https://REPLACE_WITH_RAILWAY_URL/live_signals" },
+    { "source": "/report",               "destination": "https://REPLACE_WITH_RAILWAY_URL/report" },
+    { "source": "/financials",           "destination": "https://REPLACE_WITH_RAILWAY_URL/financials" },
+    { "source": "/stockout_losses",      "destination": "https://REPLACE_WITH_RAILWAY_URL/stockout_losses" },
+    { "source": "/eod_summary",          "destination": "https://REPLACE_WITH_RAILWAY_URL/eod_summary" },
+    { "source": "/notifications",        "destination": "https://REPLACE_WITH_RAILWAY_URL/notifications" },
+    { "source": "/dismiss_notification", "destination": "https://REPLACE_WITH_RAILWAY_URL/dismiss_notification" },
+    { "source": "/add_product",          "destination": "https://REPLACE_WITH_RAILWAY_URL/add_product" },
+    { "source": "/remove_product",       "destination": "https://REPLACE_WITH_RAILWAY_URL/remove_product" },
+    { "source": "/chat",                 "destination": "https://REPLACE_WITH_RAILWAY_URL/chat" },
+    { "source": "/(.*)",                 "destination": "/index.html" }
+  ]
+}
