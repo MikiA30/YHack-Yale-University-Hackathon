@@ -1,23 +1,49 @@
 """A.U.R.A. — Adaptive Uncertainty & Risk Agent API"""
 
+from ai_profiler import generate_product_profile
+from live_factors import get_live_factors, get_store_location, set_store_location, geocode_zip
+from chatbot import chat as ai_chat
+from chatbot import explain_store as ai_explain_store
+from data import (
+    add_notification,
+    add_product,
+    dismiss_notification,
+    get_item,
+    get_notifications,
+    remove_product,
+    update_stock,
+)
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
-from data import get_item, update_stock, add_product, remove_product, add_notification, get_notifications, dismiss_notification
-from ai_profiler import generate_product_profile
-from chatbot import chat as ai_chat
 from predictor import (
-    calculate_predictions, get_inventory_view, get_alerts,
-    simulate, build_explanation_summary, generate_explanation,
+    build_explanation_summary,
+    calculate_predictions,
+    generate_explanation,
+    get_alerts,
+    get_inventory_view,
+    simulate,
 )
 from schemas import (
-    PredictionResponse, InventoryResponse, ExplanationResponse,
-    AlertsResponse, SimulateRequest, SimulateResponse,
-    UpdateRequest, UpdateResponse,
-    ScanNotification, NotificationsResponse, DismissRequest,
-    AddProductRequest, AddProductResponse,
-    RemoveProductRequest, RemoveProductResponse,
-    ChatRequest, ChatResponse,
+    AddProductRequest,
+    AddProductResponse,
+    AlertsResponse,
+    ChatRequest,
+    ChatResponse,
+    DismissRequest,
+    ExplanationResponse,
+    InventoryResponse,
+    LiveSignalsResponse,
+    LocationResponse,
+    NotificationsResponse,
+    SetLocationRequest,
+    PredictionResponse,
+    RemoveProductRequest,
+    RemoveProductResponse,
+    ScanNotification,
+    SimulateRequest,
+    SimulateResponse,
+    UpdateRequest,
+    UpdateResponse,
 )
 
 app = FastAPI(title="A.U.R.A.", description="Adaptive Uncertainty & Risk Agent")
@@ -28,6 +54,31 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/live_signals", response_model=LiveSignalsResponse)
+def live_signals():
+    return get_live_factors()
+
+
+@app.get("/location", response_model=LocationResponse)
+def get_location():
+    return get_store_location()
+
+
+@app.post("/set_location", response_model=LocationResponse)
+def set_location(req: SetLocationRequest):
+    zip_code = req.zip_code.strip()
+    if not zip_code.isdigit() or len(zip_code) != 5:
+        raise HTTPException(status_code=400, detail="Please enter a valid 5-digit US zip code.")
+    try:
+        geo = geocode_zip(zip_code)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Geocoding failed: {str(e)}")
+    set_store_location(geo["lat"], geo["lon"], zip_code, geo["label"])
+    return get_store_location()
 
 
 @app.get("/predict", response_model=PredictionResponse)
@@ -43,7 +94,9 @@ def inventory():
 @app.get("/explain", response_model=ExplanationResponse)
 def explain():
     summary = build_explanation_summary()
-    return {"explanation": generate_explanation(summary)}
+    ai_text = ai_explain_store(summary)
+    explanation = ai_text if ai_text else generate_explanation(summary)
+    return {"explanation": explanation}
 
 
 @app.get("/alerts", response_model=AlertsResponse)
