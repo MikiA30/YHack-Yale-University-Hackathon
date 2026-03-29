@@ -96,3 +96,21 @@ class NotificationsResponse(BaseModel):
 
 class DismissRequest(BaseModel):
     id: int
+
+
+class AddProductRequest(BaseModel):
+    name: str
+    current_stock: int
+    base_weekly_demand: int
+    unit_cost: float
+    price: float
+    reorder_threshold: int = 10
+    category: str = "general"
+
+
+class AddProductResponse(BaseModel):
+    item: str
+    current_stock: int
+    factors: dict
+    reasoning: str
+    factor_source: str

@@ -3,7 +3,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from data import get_item, update_stock, add_notification, get_notifications, dismiss_notification
+from data import get_item, update_stock, add_product, add_notification, get_notifications, dismiss_notification
+from ai_profiler import generate_product_profile
 from predictor import (
     calculate_predictions, get_inventory_view, get_alerts,
     simulate, build_explanation_summary, generate_explanation,
@@ -13,6 +14,7 @@ from schemas import (
     AlertsResponse, SimulateRequest, SimulateResponse,
     UpdateRequest, UpdateResponse,
     ScanNotification, NotificationsResponse, DismissRequest,
+    AddProductRequest, AddProductResponse,
 )
 
 app = FastAPI(title="A.U.R.A.", description="Adaptive Uncertainty & Risk Agent")
@@ -97,3 +99,37 @@ def dismiss(req: DismissRequest):
     if not result:
         raise HTTPException(status_code=404, detail="Notification not found")
     return result
+
+
+@app.post("/add_product", response_model=AddProductResponse)
+def add_product_endpoint(req: AddProductRequest):
+    if get_item(req.name):
+        raise HTTPException(status_code=400, detail=f"'{req.name}' already exists")
+
+    profile = generate_product_profile(req.name, req.category)
+
+    factors = {
+        "weather_factor": profile["weather_factor"],
+        "traffic_factor": profile["traffic_factor"],
+        "gas_price_factor": profile["gas_price_factor"],
+        "trend_factor": profile["trend_factor"],
+    }
+
+    add_product(
+        name=req.name,
+        current_stock=req.current_stock,
+        base_weekly_demand=req.base_weekly_demand,
+        unit_cost=req.unit_cost,
+        price=req.price,
+        reorder_threshold=req.reorder_threshold,
+        category=req.category,
+        factors=factors,
+    )
+
+    return {
+        "item": req.name,
+        "current_stock": req.current_stock,
+        "factors": factors,
+        "reasoning": profile.get("reasoning", ""),
+        "factor_source": profile.get("factor_source", "default"),
+    }

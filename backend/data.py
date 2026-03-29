@@ -38,6 +38,24 @@ def get_market_factors():
     return _market_factors
 
 
+def add_product(name, current_stock, base_weekly_demand, unit_cost, price, reorder_threshold, category, factors):
+    """Add a new product to inventory and market factors."""
+    _inventory[name] = {
+        "name": name,
+        "current_stock": current_stock,
+        "base_weekly_demand": base_weekly_demand,
+        "unit_cost": unit_cost,
+        "price": price,
+        "reorder_threshold": reorder_threshold,
+        "category": category,
+    }
+    _market_factors["weather"]["impacts"][name] = factors["weather_factor"]
+    _market_factors["gas_price"]["impacts"][name] = factors["gas_price_factor"]
+    _market_factors["traffic"]["impacts"][name] = factors["traffic_factor"]
+    _market_factors["trend"]["impacts"][name] = factors["trend_factor"]
+    return _inventory[name]
+
+
 # --- Scan notifications for manager inbox ---
 _notifications = []
 _notif_id = 0
