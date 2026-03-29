@@ -6,6 +6,7 @@ import AlertsBanner from './components/AlertsBanner'
 import ExplanationPanel from './components/ExplanationPanel'
 import SimulatorModal from './components/SimulatorModal'
 import NotificationInbox from './components/NotificationInbox'
+import AddProductPanel from './components/AddProductPanel'
 
 function App() {
   const [predictions, setPredictions] = useState([])
@@ -55,6 +56,7 @@ function App() {
           onSimulate={setSimItem}
           onRefresh={refresh}
         />
+        <AddProductPanel onRefresh={refresh} />
         <ExplanationPanel />
       </main>
       {simItem && (
