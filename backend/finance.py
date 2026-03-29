@@ -1,8 +1,8 @@
-"""Daily financial tracking for A.U.R.A.
+"""Daily financial tracking and stockout impact reporting for A.U.R.A.
 
-All data is in-memory — resets when the backend restarts.
-Sales are recorded via record_sale() when update_inventory is called
-with action="sold". Restocks and corrections do not generate revenue.
+All data is in-memory and resets when the backend restarts. Sales are
+recorded via ``record_sale()`` when ``update_inventory`` is called with
+``action="sold"``. Restocks and corrections do not generate revenue.
 """
 
 from datetime import date
@@ -10,10 +10,17 @@ from datetime import date
 from data import get_item, get_items
 from predictor import calculate_predictions
 
-# ---------------------------------------------------------------------------
-# In-memory ledger — list of individual sale events
-# ---------------------------------------------------------------------------
 _ledger: list[dict] = []
+
+
+def _today() -> str:
+    return date.today().isoformat()
+
+
+def _margin_pct(revenue: float, profit: float) -> float:
+    if revenue <= 0:
+        return 0.0
+    return round((profit / revenue) * 100, 1)
 
 
 def record_sale(item_name: str, qty: int) -> None:
@@ -30,12 +37,9 @@ def record_sale(item_name: str, qty: int) -> None:
     })
 
 
-# ---------------------------------------------------------------------------
-# Daily financials
-# ---------------------------------------------------------------------------
 def get_daily_financials() -> dict:
     """Aggregate today's sales into revenue, profit, and per-product breakdown."""
-    today       = date.today().isoformat()
+    today = _today()
     today_sales = [e for e in _ledger if e["date"] == today]
 
     by_item: dict[str, dict] = {}
@@ -56,7 +60,7 @@ def get_daily_financials() -> dict:
             "units_sold": v["units_sold"],
             "revenue":    rev,
             "profit":     prof,
-            "margin_pct": round(prof / rev * 100, 1) if rev > 0 else 0.0,
+            "margin_pct": _margin_pct(rev, prof),
         })
     products.sort(key=lambda x: x["revenue"], reverse=True)
 
@@ -67,15 +71,12 @@ def get_daily_financials() -> dict:
         "date":          today,
         "total_revenue": total_revenue,
         "total_profit":  total_profit,
-        "margin_pct":    round(total_profit / total_revenue * 100, 1) if total_revenue > 0 else 0.0,
+        "margin_pct":    _margin_pct(total_revenue, total_profit),
         "by_product":    products,
     }
 
 
-# ---------------------------------------------------------------------------
-# Stockout loss projections
-# ---------------------------------------------------------------------------
-def get_stockout_losses() -> list:
+def get_stockout_losses() -> list[dict]:
     """Project lost revenue and profit for items where demand exceeds current stock."""
     items  = get_items()
     preds  = {p["item"]: p for p in calculate_predictions()}
@@ -96,16 +97,25 @@ def get_stockout_losses() -> list:
                 "shortfall":        shortfall,
                 "lost_revenue":     round(shortfall * price,          2),
                 "lost_profit":      round(shortfall * (price - cost), 2),
-                "margin_pct":       round((price - cost) / price * 100, 1) if price > 0 else 0.0,
+                "margin_pct":       _margin_pct(price, price - cost),
             })
 
     losses.sort(key=lambda x: x["lost_revenue"], reverse=True)
     return losses
 
 
-# ---------------------------------------------------------------------------
-# End-of-day summary
-# ---------------------------------------------------------------------------
+def _restock_priority(
+    shortfall: int,
+    current_stock: int,
+    reorder_threshold: int,
+) -> str:
+    if current_stock <= 0 or current_stock <= reorder_threshold or shortfall >= 15:
+        return "critical"
+    if shortfall >= 8:
+        return "high"
+    return "medium"
+
+
 def get_eod_summary() -> dict:
     """Generate a full end-of-day business summary."""
     financials = get_daily_financials()
@@ -146,14 +156,16 @@ def get_eod_summary() -> dict:
                 "restock_qty":   restock_qty,
                 "revenue_gain":  round(saleable * price,          2),
                 "profit_gain":   round(saleable * (price - cost), 2),
-                "priority":      "critical" if stock <= threshold else "warning",
+                "priority":      _restock_priority(shortfall, stock, threshold),
             })
 
-    # Critical first, then descending revenue gain
-    restock_actions.sort(key=lambda x: (x["priority"] == "warning", -x["revenue_gain"]))
+    priority_rank = {"critical": 0, "high": 1, "medium": 2}
+    restock_actions.sort(
+        key=lambda x: (priority_rank.get(x["priority"], 99), -x["revenue_gain"])
+    )
 
     return {
-        "date":                         date.today().isoformat(),
+        "date":                         financials["date"],
         "total_revenue":                financials["total_revenue"],
         "total_profit":                 financials["total_profit"],
         "margin_pct":                   financials["margin_pct"],

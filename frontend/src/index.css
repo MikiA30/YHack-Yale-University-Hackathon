@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+    --color-earth-50: #f7f8f2;
+    --color-earth-100: #eef2e3;
+    --color-earth-500: #617a4c;
+    --color-earth-700: #35503b;
+    --shadow-panel: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
 :root {
     --bg-base: #f3f4f6;
     --bg-card: #ffffff;

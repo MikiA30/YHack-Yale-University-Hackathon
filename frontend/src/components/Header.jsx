@@ -17,13 +17,19 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs text-slate-500 hidden sm:block">
-            Gas Station Inventory Intelligence
+            Module: Convenience Store
           </span>
           <a
-            href="/metrics"
+            href="/"
             className="text-xs px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors"
           >
-            Metrics
+            Modules
+          </a>
+          <a
+            href="/modules/omnicrop"
+            className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+          >
+            OmniCrop
           </a>
           <a
             href="/employee"
