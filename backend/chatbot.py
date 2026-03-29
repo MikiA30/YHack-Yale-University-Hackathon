@@ -6,10 +6,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 import httpx
+from data import get_aisles, get_items, get_market_factors, get_store_info
 from dotenv import load_dotenv
-
-from data import get_items, get_aisles, get_store_info, get_market_factors
-from predictor import calculate_predictions, get_inventory_view, get_alerts
+from live_factors import get_live_factors
+from predictor import calculate_predictions, get_alerts, get_inventory_view
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
@@ -48,16 +48,37 @@ def _build_store_context():
 
     aisle_lines = [f"- {code}: {name}" for code, name in aisles.items()]
 
-    alert_lines = [f"- [{a['level'].upper()}] {a['message']}" for a in alerts] if alerts else ["- No active alerts"]
+    alert_lines = (
+        [f"- [{a['level'].upper()}] {a['message']}" for a in alerts]
+        if alerts
+        else ["- No active alerts"]
+    )
+
+    # Live real-world signals
+    live_lines = ["- Live signals unavailable (using static fallback)"]
+    try:
+        live = get_live_factors()
+        live_lines = [
+            f"- Weather forecast ({live['weather'].get('forecast_days', '?')} days): "
+            f"{live['weather'].get('summary', 'n/a')} "
+            f"[score: {live['weather'].get('score', 0.0):+.2f}]",
+            f"- Economic (CPI): {live['economic'].get('summary', 'n/a')} "
+            f"[score: {live['economic'].get('score', 0.0):+.2f}]",
+            f"- Event signals: {live['event'].get('summary', 'n/a')} "
+            f"[score: {live['event'].get('score', 0.0):+.2f}]",
+        ]
+    except Exception:
+        pass
 
     # Revenue estimates
     total_potential = sum(
         inv_map[item["name"]]["predicted_demand"] * item["price"]
-        for item in items if item["name"] in inv_map
+        for item in items
+        if item["name"] in inv_map
     )
     total_stock_value = sum(item["current_stock"] * item["unit_cost"] for item in items)
 
-    return f"""STORE: {store['name']} — {store['location']} ({store['type']})
+    return f"""STORE: {store["name"]} — {store["location"]} ({store["type"]})
 
 AISLES:
 {chr(10).join(aisle_lines)}
@@ -69,10 +90,13 @@ ACTIVE ALERTS:
 {chr(10).join(alert_lines)}
 
 MARKET CONDITIONS:
-- Weather: {factors['weather']['condition']}
-- Gas prices: {factors['gas_price']['trend']}
-- Foot traffic: {factors['traffic']['level']}
-- Season: {factors['trend']['season']}
+- Weather: {factors["weather"]["condition"]}
+- Gas prices: {factors["gas_price"]["trend"]}
+- Foot traffic: {factors["traffic"]["level"]}
+- Season: {factors["trend"]["season"]}
+
+LIVE REAL-WORLD SIGNALS (forecast-driven):
+{chr(10).join(live_lines)}
 
 FINANCIALS:
 - Total stock value (at cost): ${total_stock_value:.2f}
@@ -130,4 +154,70 @@ def chat(user_message, model=None):
         return {"response": text, "model": model}
 
     except Exception as e:
-        return {"response": f"Sorry, I couldn't process that right now. Error: {str(e)}", "model": model}
+        return {
+            "response": f"Sorry, I couldn't process that right now. Error: {str(e)}",
+            "model": model,
+        }
+
+
+def explain_store(summary):
+    """Generate a short, plain-English explanation of current recommendations.
+    Takes a small structured summary — NOT full inventory JSON.
+    Uses Haiku only for speed and reliability."""
+    if not LAVA_FORWARD_TOKEN:
+        return None  # caller will fall back to mock
+
+    movers = summary["top_movers"]
+    mover_text = ", ".join(
+        f"{m['item']} ({'+' if m['change'] > 0 else ''}{m['change']}%, {m['rec']})"
+        for m in movers
+    )
+
+    live = summary.get("live", {})
+    live_context = ""
+    if live:
+        parts = []
+        if live.get("weather_forecast"):
+            parts.append(f"forecast: {live['weather_forecast']}")
+        if live.get("economic"):
+            parts.append(f"economy: {live['economic']}")
+        if live.get("events"):
+            parts.append(f"news signals: {live['events']}")
+        if parts:
+            live_context = f" Real-world data — {'; '.join(parts)}."
+
+    prompt = (
+        f"You help a gas station convenience store owner understand their weekly inventory.\n\n"
+        f"This week: weather is {summary['weather']}, gas prices are {summary['gas_trend']}, "
+        f"foot traffic is {summary['traffic']}, season is {summary['season'].replace('_', ' ')}."
+        f"{live_context}\n"
+        f"Top movers: {mover_text}.\n\n"
+        f"Write 2-3 plain sentences explaining why these items are moving the way they are. "
+        f"Reference the real-world forecast data if it is available and relevant. "
+        f"Speak directly to the owner — no bullet points, no emojis, no filler phrases like 'Great news!' "
+        f"Just tell them what's happening and what to do, like a trusted advisor would."
+    )
+
+    target_url = "https://api.anthropic.com/v1/messages"
+    lava_url = f"https://api.lava.so/v1/forward?u={quote(target_url, safe='')}"
+
+    try:
+        response = httpx.post(
+            lava_url,
+            headers={
+                "Authorization": f"Bearer {LAVA_FORWARD_TOKEN}",
+                "Content-Type": "application/json",
+                "anthropic-version": "2023-06-01",
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 150,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=20,
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["content"][0]["text"].strip()
+    except Exception:
+        return None  # caller will fall back to mock

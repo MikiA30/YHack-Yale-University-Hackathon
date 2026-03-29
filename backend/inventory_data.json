@@ -13,17 +13,27 @@
   },
   "items": [
     {
-      "name": "Red Bull",
-      "current_stock": 40,
-      "base_weekly_demand": 50,
-      "unit_cost": 2.50,
+      "name": "Red Bull Cherry Sakura",
+      "current_stock": 20,
+      "base_weekly_demand": 25,
+      "unit_cost": 2.5,
       "price": 4.99,
-      "reorder_threshold": 15,
+      "reorder_threshold": 8,
       "category": "energy_drinks",
       "aisle": "A1"
     },
     {
-      "name": "Bottled Water",
+      "name": "Red Bull White Peach",
+      "current_stock": 20,
+      "base_weekly_demand": 25,
+      "unit_cost": 2.5,
+      "price": 4.99,
+      "reorder_threshold": 8,
+      "category": "energy_drinks",
+      "aisle": "A1"
+    },
+    {
+      "name": "Dasani Water",
       "current_stock": 100,
       "base_weekly_demand": 80,
       "unit_cost": 0.75,
@@ -33,27 +43,47 @@
       "aisle": "A1"
     },
     {
-      "name": "Chips",
+      "name": "Lay's Classic",
       "current_stock": 30,
       "base_weekly_demand": 35,
-      "unit_cost": 1.50,
+      "unit_cost": 1.5,
       "price": 3.49,
       "reorder_threshold": 10,
       "category": "snacks",
       "aisle": "A2"
     },
     {
-      "name": "Candy",
-      "current_stock": 45,
-      "base_weekly_demand": 25,
-      "unit_cost": 1.00,
-      "price": 1.79,
-      "reorder_threshold": 10,
+      "name": "Feastables Peanut Butter",
+      "current_stock": 15,
+      "base_weekly_demand": 10,
+      "unit_cost": 1.5,
+      "price": 2.99,
+      "reorder_threshold": 5,
       "category": "snacks",
       "aisle": "A5"
     },
     {
-      "name": "Coffee",
+      "name": "Feastables Cookies & Creme",
+      "current_stock": 15,
+      "base_weekly_demand": 10,
+      "unit_cost": 1.5,
+      "price": 2.99,
+      "reorder_threshold": 5,
+      "category": "snacks",
+      "aisle": "A5"
+    },
+    {
+      "name": "Feastables Caramel",
+      "current_stock": 15,
+      "base_weekly_demand": 10,
+      "unit_cost": 1.5,
+      "price": 2.99,
+      "reorder_threshold": 5,
+      "category": "snacks",
+      "aisle": "A5"
+    },
+    {
+      "name": "Starbucks Frappuccino",
       "current_stock": 55,
       "base_weekly_demand": 60,
       "unit_cost": 1.25,
@@ -66,7 +96,7 @@
       "name": "Ice",
       "current_stock": 20,
       "base_weekly_demand": 40,
-      "unit_cost": 3.00,
+      "unit_cost": 3.0,
       "price": 5.99,
       "reorder_threshold": 8,
       "category": "frozen",
@@ -76,17 +106,17 @@
       "name": "Sunglasses",
       "current_stock": 12,
       "base_weekly_demand": 8,
-      "unit_cost": 5.00,
+      "unit_cost": 5.0,
       "price": 12.99,
       "reorder_threshold": 4,
       "category": "accessories",
       "aisle": "A5"
     },
     {
-      "name": "Beef Jerky",
+      "name": "Jack Link's Beef Jerky",
       "current_stock": 18,
       "base_weekly_demand": 15,
-      "unit_cost": 4.50,
+      "unit_cost": 4.5,
       "price": 7.99,
       "reorder_threshold": 5,
       "category": "snacks",
@@ -97,53 +127,65 @@
     "weather": {
       "condition": "hot",
       "impacts": {
-        "Red Bull": 0.15,
-        "Bottled Water": 0.30,
-        "Chips": 0.05,
-        "Candy": -0.05,
-        "Coffee": -0.20,
-        "Ice": 0.40,
+        "Red Bull Cherry Sakura": 0.12,
+        "Red Bull White Peach": 0.18,
+        "Dasani Water": 0.3,
+        "Lay's Classic": 0.05,
+        "Feastables Peanut Butter": -0.05,
+        "Feastables Cookies & Creme": -0.05,
+        "Feastables Caramel": -0.05,
+        "Starbucks Frappuccino": -0.2,
+        "Ice": 0.4,
         "Sunglasses": 0.35,
-        "Beef Jerky": 0.05
+        "Jack Link's Beef Jerky": 0.05
       }
     },
     "gas_price": {
       "trend": "rising",
       "impacts": {
-        "Red Bull": 0.10,
-        "Bottled Water": 0.05,
-        "Chips": 0.08,
-        "Candy": 0.03,
-        "Coffee": 0.12,
+        "Red Bull Cherry Sakura": 0.1,
+        "Red Bull White Peach": 0.1,
+        "Dasani Water": 0.05,
+        "Lay's Classic": 0.08,
+        "Feastables Peanut Butter": 0.03,
+        "Feastables Cookies & Creme": 0.03,
+        "Feastables Caramel": 0.03,
+        "Starbucks Frappuccino": 0.12,
         "Ice": 0.02,
         "Sunglasses": 0.01,
-        "Beef Jerky": 0.06
+        "Jack Link's Beef Jerky": 0.06
       }
     },
     "traffic": {
       "level": "high",
       "impacts": {
-        "Red Bull": 0.20,
-        "Bottled Water": 0.15,
-        "Chips": 0.10,
-        "Candy": 0.05,
-        "Coffee": 0.18,
-        "Ice": 0.10,
+        "Red Bull Cherry Sakura": 0.2,
+        "Red Bull White Peach": 0.2,
+        "Dasani Water": 0.15,
+        "Lay's Classic": 0.1,
+        "Feastables Peanut Butter": 0.05,
+        "Feastables Cookies & Creme": 0.05,
+        "Feastables Caramel": 0.05,
+        "Starbucks Frappuccino": 0.18,
+        "Ice": 0.1,
         "Sunglasses": 0.08,
-        "Beef Jerky": 0.10
+        "Jack Link's Beef Jerky": 0.1
       }
     },
     "trend": {
       "season": "summer_peak",
       "impacts": {
-        "Red Bull": 0.12,
-        "Bottled Water": 0.20,
-        "Chips": 0.05,
-        "Candy": -0.08,
-        "Coffee": -0.10,
+        "Red Bull Cherry Sakura": 0.18,
+        "Red Bull White Peach": 0.15,
+        "Dasani Water": 0.2,
+        "Lay's Classic": 0.05,
+        "Feastables Peanut Butter": 0.1,
+        "Feastables Cookies & Creme": 0.08,
+        "Feastables Caramel": 0.09,
+        "Starbucks Frappuccino": -0.1,
         "Ice": 0.25,
-        "Sunglasses": 0.20,
-        "Beef Jerky": 0.03
+        "Sunglasses": 0.2,
+        "Jack Link's Beef Jerky": 0.03
       }
     }
   }
