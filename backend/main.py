@@ -4,6 +4,7 @@ from ai_profiler import generate_product_profile
 from live_factors import get_live_factors, get_store_location, set_store_location, geocode_zip
 from chatbot import chat as ai_chat
 from chatbot import explain_store as ai_explain_store
+from finance import record_sale, get_daily_financials, get_stockout_losses, get_eod_summary
 from data import (
     add_notification,
     add_product,
@@ -30,7 +31,9 @@ from schemas import (
     ChatRequest,
     ChatResponse,
     DismissRequest,
+    EodSummaryResponse,
     ExplanationResponse,
+    FinancialsResponse,
     InventoryResponse,
     LiveSignalsResponse,
     LocationResponse,
@@ -42,6 +45,7 @@ from schemas import (
     ScanNotification,
     SimulateRequest,
     SimulateResponse,
+    StockoutLossesResponse,
     UpdateRequest,
     UpdateResponse,
 )
@@ -122,6 +126,7 @@ def update_inventory(req: UpdateRequest):
 
     if req.action == "sold":
         new_stock = previous - req.amount
+        record_sale(req.item, req.amount)
     elif req.action == "restock":
         new_stock = previous + req.amount
     elif req.action == "correct":
@@ -136,6 +141,26 @@ def update_inventory(req: UpdateRequest):
         "current_stock": max(0, new_stock),
         "previous_stock": previous,
     }
+
+
+@app.get("/financials", response_model=FinancialsResponse)
+def financials():
+    return get_daily_financials()
+
+
+@app.get("/stockout_losses", response_model=StockoutLossesResponse)
+def stockout_losses():
+    losses = get_stockout_losses()
+    return {
+        "losses": losses,
+        "total_lost_revenue": round(sum(l["lost_revenue"] for l in losses), 2),
+        "total_lost_profit":  round(sum(l["lost_profit"]  for l in losses), 2),
+    }
+
+
+@app.get("/eod_summary", response_model=EodSummaryResponse)
+def eod_summary():
+    return get_eod_summary()
 
 
 @app.post("/notify_scan")

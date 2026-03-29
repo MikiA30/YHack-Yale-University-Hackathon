@@ -63,7 +63,9 @@ class SimulateResponse(BaseModel):
     waste_risk: str
     surplus: int
     revenue_gain: float
+    profit_gain: float
     lost_revenue: float
+    lost_profit: float
 
 
 class UpdateRequest(BaseModel):
@@ -146,6 +148,60 @@ class LocationResponse(BaseModel):
     label: str
     lat: float
     lon: float
+
+
+class ProductSales(BaseModel):
+    item: str
+    units_sold: int
+    revenue: float
+    profit: float
+    margin_pct: float
+
+
+class FinancialsResponse(BaseModel):
+    date: str
+    total_revenue: float
+    total_profit: float
+    margin_pct: float
+    by_product: list[ProductSales]
+
+
+class StockoutLoss(BaseModel):
+    item: str
+    current_stock: int
+    predicted_demand: int
+    shortfall: int
+    lost_revenue: float
+    lost_profit: float
+    margin_pct: float
+
+
+class StockoutLossesResponse(BaseModel):
+    losses: list[StockoutLoss]
+    total_lost_revenue: float
+    total_lost_profit: float
+
+
+class RestockAction(BaseModel):
+    item: str
+    current_stock: int
+    restock_qty: int
+    revenue_gain: float
+    profit_gain: float
+    priority: str
+
+
+class EodSummaryResponse(BaseModel):
+    date: str
+    total_revenue: float
+    total_profit: float
+    margin_pct: float
+    best_seller: dict | None
+    highest_margin_item: dict | None
+    biggest_stockout_risk: dict | None
+    total_projected_lost_revenue: float
+    total_projected_lost_profit: float
+    restock_actions: list[RestockAction]
 
 
 class LiveSignalDetail(BaseModel):
