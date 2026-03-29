@@ -1,5 +1,6 @@
 """A.U.R.A. — Adaptive Uncertainty & Risk Agent API"""
 
+from app.domains.omnicrop.routes import router as omnicrop_router
 from ai_profiler import generate_product_profile
 from live_factors import get_live_factors, get_store_location, set_store_location, geocode_zip
 from chatbot import chat as ai_chat
@@ -24,6 +25,7 @@ from predictor import (
     get_inventory_view,
     simulate,
 )
+from module_registry import list_modules
 from schemas import (
     AddProductRequest,
     AddProductResponse,
@@ -58,6 +60,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(omnicrop_router)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.get("/platform/modules")
+def platform_modules():
+    return list_modules()
 
 
 @app.get("/live_signals", response_model=LiveSignalsResponse)

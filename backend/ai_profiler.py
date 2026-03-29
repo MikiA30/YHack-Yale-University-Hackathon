@@ -3,15 +3,15 @@ Generates demand impact factors for new products using Claude."""
 
 import json
 import os
+from importlib import import_module
 from pathlib import Path
+from types import ModuleType
 from urllib.parse import quote
 
-import httpx
 from dotenv import load_dotenv
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
-
-LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
 
 DEFAULT_FACTORS = {
     "weather_factor": 0.05,
@@ -23,10 +23,19 @@ DEFAULT_FACTORS = {
 }
 
 
+def _get_httpx() -> ModuleType | None:
+    try:
+        return import_module("httpx")
+    except ModuleNotFoundError:
+        return None
+
+
 def generate_product_profile(product_name, category):
     """Call Claude via Lava forward proxy to generate demand impact factors."""
 
-    if not LAVA_FORWARD_TOKEN:
+    httpx = _get_httpx()
+    lava_forward_token = os.getenv("LAVA_FORWARD_TOKEN", "").strip()
+    if not lava_forward_token or httpx is None:
         return DEFAULT_FACTORS
 
     prompt = f"""You are generating demand factors for a convenience store product.
@@ -48,7 +57,7 @@ Return ONLY valid JSON in this exact format, no other text:
         response = httpx.post(
             lava_url,
             headers={
-                "Authorization": f"Bearer {LAVA_FORWARD_TOKEN}",
+                "Authorization": f"Bearer {lava_forward_token}",
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01",
             },
