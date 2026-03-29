@@ -2,23 +2,25 @@
 
 import json
 import os
-<<<<<<< HEAD
 from importlib import import_module
-=======
 import re
->>>>>>> 4677a48 (Checked over everything!)
 from pathlib import Path
 from types import ModuleType
 from urllib.parse import quote
 
 from data import get_aisles, get_items, get_market_factors, get_store_info
 from finance import get_daily_financials, get_stockout_losses
-from dotenv import load_dotenv
 from live_factors import get_live_factors
 from predictor import calculate_predictions, get_alerts, get_inventory_view, get_all_factor_breakdowns
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - optional convenience only
+    load_dotenv = None
+
+if load_dotenv is not None:
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # Default model — can be overridden per request
 DEFAULT_MODEL = "claude-sonnet-4-6-20250514"
@@ -259,15 +261,11 @@ Bad example: "Your business is performing well based on current market condition
 
 def chat(user_message, model=None):
     """Send a message to Claude with full store context."""
-<<<<<<< HEAD
     httpx = _get_httpx()
     lava_forward_token = os.getenv("LAVA_FORWARD_TOKEN", "").strip()
-    if not lava_forward_token or httpx is None:
-=======
     action, action_data = _detect_action(user_message)
 
-    if not LAVA_FORWARD_TOKEN:
->>>>>>> 4677a48 (Checked over everything!)
+    if not lava_forward_token or httpx is None:
         return {
             "response": "AI chatbot is not configured. Set LAVA_FORWARD_TOKEN to enable.",
             "model": "none",

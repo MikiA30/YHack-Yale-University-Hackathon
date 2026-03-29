@@ -22,18 +22,17 @@ from typing import Any
 from types import ModuleType
 from urllib.parse import quote
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - optional convenience only
+    load_dotenv = None
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
-
-<<<<<<< HEAD
-LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
-=======
+if load_dotenv is not None:
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 def _env(name: str) -> str:
     return os.getenv(name, "").strip()
->>>>>>> 6671e12 (Merging Omnicrop and Convenience Store Modules -- Missing Aura Reccomendation, Sales summary)
 
 # Store location — mutable, defaults to Hartford, CT (QuickStop #47)
 _location: dict = {
@@ -241,23 +240,14 @@ def _score_weather(data: dict) -> dict:
 # 2. ECONOMIC — FRED CPI (CPIAUCSL, 13 months for YoY)
 # ---------------------------------------------------------------------------
 def _fetch_economic() -> dict:
-<<<<<<< HEAD
-    if not LAVA_FORWARD_TOKEN:
+    if not _env("LAVA_FORWARD_TOKEN"):
         raise ValueError("LAVA_FORWARD_TOKEN not set")
-    # api_key is injected automatically by Lava (managed provider)
-    target = (
-        "https://api.stlouisfed.org/fred/series/observations"
-        "?series_id=CPIAUCSL&limit=13&sort_order=desc&file_type=json"
-=======
+
     fred_api_key = _env("FRED_API_KEY")
-    if not fred_api_key:
-        raise ValueError("FRED_API_KEY not set")
-    target = (
-        f"https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id=CPIAUCSL&api_key={fred_api_key}"
-        f"&limit=13&sort_order=desc&file_type=json"
->>>>>>> 6671e12 (Merging Omnicrop and Convenience Store Modules -- Missing Aura Reccomendation, Sales summary)
-    )
+    target = "https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL"
+    if fred_api_key:
+        target += f"&api_key={fred_api_key}"
+    target += "&limit=13&sort_order=desc&file_type=json"
     return _lava_get(target)
 
 
@@ -295,14 +285,10 @@ def _score_economic(data: dict) -> dict:
 # 3. EVENT / NEWS — Serper news search
 # ---------------------------------------------------------------------------
 def _fetch_events() -> dict:
-<<<<<<< HEAD
-    if not LAVA_FORWARD_TOKEN:
+    if not _env("LAVA_FORWARD_TOKEN"):
         raise ValueError("LAVA_FORWARD_TOKEN not set")
-=======
+
     serper_api_key = _env("SERPER_API_KEY")
-    if not serper_api_key:
-        raise ValueError("SERPER_API_KEY not set")
->>>>>>> 6671e12 (Merging Omnicrop and Convenience Store Modules -- Missing Aura Reccomendation, Sales summary)
     target = "https://google.serper.dev/news"
     body   = {
         "q":   "gas prices supply chain shortage weather alert Hartford Connecticut convenience store",
@@ -310,12 +296,8 @@ def _fetch_events() -> dict:
         "gl":  "us",
         "hl":  "en",
     }
-<<<<<<< HEAD
-    # x-api-key for Serper is injected automatically by Lava (managed provider)
-    return _lava_post(target, body)
-=======
-    return _lava_post(target, body, extra_headers={"X-API-KEY": serper_api_key})
->>>>>>> 6671e12 (Merging Omnicrop and Convenience Store Modules -- Missing Aura Reccomendation, Sales summary)
+    extra_headers = {"X-API-KEY": serper_api_key} if serper_api_key else None
+    return _lava_post(target, body, extra_headers=extra_headers)
 
 
 def _score_events(data: dict) -> dict:

@@ -4,12 +4,16 @@ from pathlib import Path
 from types import ModuleType
 from urllib.parse import quote
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - optional convenience only
+    load_dotenv = None
 
 from app.domains.omnicrop.services import get_mock_analysis_response
 
-load_dotenv(Path(__file__).resolve().parents[3] / ".env")
-load_dotenv(Path(__file__).resolve().parents[4] / ".env")
+if load_dotenv is not None:
+    load_dotenv(Path(__file__).resolve().parents[3] / ".env")
+    load_dotenv(Path(__file__).resolve().parents[4] / ".env")
 
 DEFAULT_MODEL = "claude-sonnet-4-6-20250514"
 
