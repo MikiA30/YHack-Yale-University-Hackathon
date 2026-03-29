@@ -1,6 +1,6 @@
 """Prediction engine — all math lives here, no AI involved."""
 
-from data import get_items, get_item, get_market_factors
+from data import get_items, get_item, get_aisles, get_market_factors
 
 
 def _get_factors(name):
@@ -50,11 +50,15 @@ def get_inventory_view():
     rows = []
     for item in items:
         p = preds[item["name"]]
+        aisles = get_aisles()
+        aisle_code = item.get("aisle", "")
         rows.append({
             "item": item["name"],
             "current_stock": item["current_stock"],
             "unit_cost": item["unit_cost"],
             "price": item["price"],
+            "aisle": aisle_code,
+            "aisle_name": aisles.get(aisle_code, ""),
             "predicted_demand": p["predicted_demand"],
             "demand_change_pct": p["demand_change_pct"],
             "recommended_change": p["predicted_demand"] - item["current_stock"],

@@ -4,6 +4,13 @@
     "location": "Hartford, CT",
     "type": "gas_station_convenience"
   },
+  "aisles": {
+    "A1": "Cold Beverages & Energy",
+    "A2": "Snacks & Munchies",
+    "A3": "Coffee & Hot Drinks",
+    "A4": "Frozen & Ice",
+    "A5": "Checkout & Accessories"
+  },
   "items": [
     {
       "name": "Red Bull",
@@ -12,7 +19,8 @@
       "unit_cost": 2.50,
       "price": 4.99,
       "reorder_threshold": 15,
-      "category": "energy_drinks"
+      "category": "energy_drinks",
+      "aisle": "A1"
     },
     {
       "name": "Bottled Water",
@@ -21,7 +29,8 @@
       "unit_cost": 0.75,
       "price": 1.99,
       "reorder_threshold": 25,
-      "category": "beverages"
+      "category": "beverages",
+      "aisle": "A1"
     },
     {
       "name": "Chips",
@@ -30,7 +39,8 @@
       "unit_cost": 1.50,
       "price": 3.49,
       "reorder_threshold": 10,
-      "category": "snacks"
+      "category": "snacks",
+      "aisle": "A2"
     },
     {
       "name": "Candy",
@@ -39,7 +49,8 @@
       "unit_cost": 1.00,
       "price": 1.79,
       "reorder_threshold": 10,
-      "category": "snacks"
+      "category": "snacks",
+      "aisle": "A5"
     },
     {
       "name": "Coffee",
@@ -48,7 +59,8 @@
       "unit_cost": 1.25,
       "price": 2.49,
       "reorder_threshold": 20,
-      "category": "hot_beverages"
+      "category": "hot_beverages",
+      "aisle": "A3"
     },
     {
       "name": "Ice",
@@ -57,7 +69,8 @@
       "unit_cost": 3.00,
       "price": 5.99,
       "reorder_threshold": 8,
-      "category": "frozen"
+      "category": "frozen",
+      "aisle": "A4"
     },
     {
       "name": "Sunglasses",
@@ -66,7 +79,8 @@
       "unit_cost": 5.00,
       "price": 12.99,
       "reorder_threshold": 4,
-      "category": "accessories"
+      "category": "accessories",
+      "aisle": "A5"
     },
     {
       "name": "Beef Jerky",
@@ -75,7 +89,8 @@
       "unit_cost": 4.50,
       "price": 7.99,
       "reorder_threshold": 5,
-      "category": "snacks"
+      "category": "snacks",
+      "aisle": "A2"
     }
   ],
   "market_factors": {

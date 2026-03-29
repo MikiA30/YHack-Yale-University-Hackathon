@@ -56,6 +56,7 @@ export default function InventoryTable({ inventory, onSimulate, onRefresh }) {
           <thead>
             <tr className="bg-slate-800/80 text-slate-400 text-left">
               <th className="px-5 py-3 font-medium">Item</th>
+              <th className="px-5 py-3 font-medium">Aisle</th>
               <th className="px-5 py-3 font-medium">Stock</th>
               <th className="px-5 py-3 font-medium">Predicted</th>
               <th className="px-5 py-3 font-medium">Change</th>
@@ -71,6 +72,13 @@ export default function InventoryTable({ inventory, onSimulate, onRefresh }) {
                 className={`border-t border-slate-700/40 ${i % 2 === 0 ? 'bg-slate-800/30' : 'bg-slate-800/10'}`}
               >
                 <td className="px-5 py-3 text-white font-medium">{row.item}</td>
+                <td className="px-5 py-3">
+                  {row.aisle && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300" title={row.aisle_name}>
+                      {row.aisle}
+                    </span>
+                  )}
+                </td>
                 <td className="px-5 py-3 text-slate-300">{row.current_stock}</td>
                 <td className="px-5 py-3 text-slate-300">{row.predicted_demand}</td>
                 <td className="px-5 py-3">
@@ -86,12 +94,26 @@ export default function InventoryTable({ inventory, onSimulate, onRefresh }) {
                 <td className="px-5 py-3">
                   <QuickActions item={row} onRefresh={onRefresh} />
                 </td>
-                <td className="px-5 py-3">
+                <td className="px-5 py-3 flex gap-1.5">
                   <button
                     onClick={() => onSimulate(row)}
                     className="text-xs px-3 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white transition-colors"
                   >
                     What-If
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Remove ${row.item} from inventory?`)) {
+                        fetch('/remove_product', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ name: row.item }),
+                        }).then(() => onRefresh())
+                      }
+                    }}
+                    className="text-xs px-2 py-1.5 rounded-lg bg-red-600/30 hover:bg-red-600/60 text-red-400 transition-colors"
+                  >
+                    Remove
                   </button>
                 </td>
               </tr>
