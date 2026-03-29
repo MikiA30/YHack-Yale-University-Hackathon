@@ -26,8 +26,6 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
-FRED_API_KEY       = os.getenv("FRED_API_KEY", "")
-SERPER_API_KEY     = os.getenv("SERPER_API_KEY", "")
 
 # Store location — mutable, defaults to Hartford, CT (QuickStop #47)
 _location: dict = {
@@ -222,12 +220,12 @@ def _score_weather(data: dict) -> dict:
 # 2. ECONOMIC — FRED CPI (CPIAUCSL, 13 months for YoY)
 # ---------------------------------------------------------------------------
 def _fetch_economic() -> dict:
-    if not FRED_API_KEY:
-        raise ValueError("FRED_API_KEY not set")
+    if not LAVA_FORWARD_TOKEN:
+        raise ValueError("LAVA_FORWARD_TOKEN not set")
+    # api_key is injected automatically by Lava (managed provider)
     target = (
-        f"https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id=CPIAUCSL&api_key={FRED_API_KEY}"
-        f"&limit=13&sort_order=desc&file_type=json"
+        "https://api.stlouisfed.org/fred/series/observations"
+        "?series_id=CPIAUCSL&limit=13&sort_order=desc&file_type=json"
     )
     return _lava_get(target)
 
@@ -266,8 +264,8 @@ def _score_economic(data: dict) -> dict:
 # 3. EVENT / NEWS — Serper news search
 # ---------------------------------------------------------------------------
 def _fetch_events() -> dict:
-    if not SERPER_API_KEY:
-        raise ValueError("SERPER_API_KEY not set")
+    if not LAVA_FORWARD_TOKEN:
+        raise ValueError("LAVA_FORWARD_TOKEN not set")
     target = "https://google.serper.dev/news"
     body   = {
         "q":   "gas prices supply chain shortage weather alert Hartford Connecticut convenience store",
@@ -275,7 +273,8 @@ def _fetch_events() -> dict:
         "gl":  "us",
         "hl":  "en",
     }
-    return _lava_post(target, body, extra_headers={"X-API-KEY": SERPER_API_KEY})
+    # x-api-key for Serper is injected automatically by Lava (managed provider)
+    return _lava_post(target, body)
 
 
 def _score_events(data: dict) -> dict:
