@@ -4,8 +4,8 @@
 
 Built at YHack 2026 (Yale University).
 Members: 
-Mikiyas Asmamaw- Chemical Engineering at Cornell University 
-Bolu Omole- Electrical Engineering at Massachusetts Institute of Technology (MIT)
+Mikiyas Asmamaw - Chemical Engineering at Cornell University 
+Bolu Omole - Electrical Engineering at Massachusetts Institute of Technology (MIT)
 
 ## Inspiration
 
