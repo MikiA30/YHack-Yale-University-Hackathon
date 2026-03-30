@@ -3,6 +3,7 @@
 ## Team
 
 Built at YHack 2026 (Yale University).
+
 Members: 
 
 Mikiyas Asmamaw - Chemical Engineering at Cornell University 
