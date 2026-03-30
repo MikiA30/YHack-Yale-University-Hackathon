@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import AuraLogo from "./AuraLogo";
+import api from "../api";
 
 const MODELS = [{ id: "claude-haiku-4-5-20251001", label: "Haiku 4.5" }];
 
@@ -34,7 +35,7 @@ export default function ChatPanel({ onOpenReport }) {
     setMessages((prev) => [...prev, { role: "user", text: userMsg }]);
     setLoading(true);
 
-    fetch("/chat", {
+    api("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: userMsg, model }),

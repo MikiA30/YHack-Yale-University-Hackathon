@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import ChatPanel from "../components/ChatPanel";
 import ReportModal from "../components/ReportModal";
 import AuraLogo from "../components/AuraLogo";
+import api from "../api";
 
 // ── small helpers ─────────────────────────────────────────────────────────────
 const fmt$ = (n) => `$${Number(n).toFixed(2)}`;
@@ -64,8 +65,8 @@ export default function MetricsPage() {
 
   const load = useCallback(() => {
     Promise.all([
-      fetch("/financials").then((r) => r.json()),
-      fetch("/stockout_losses").then((r) => r.json()),
+      api("/financials").then((r) => r.json()),
+      api("/stockout_losses").then((r) => r.json()),
     ])
       .then(([fin, loss]) => {
         setFinancials(fin);
@@ -86,7 +87,7 @@ export default function MetricsPage() {
 
   const loadEod = () => {
     setEodLoading(true);
-    fetch("/eod_summary")
+    api("/eod_summary")
       .then((r) => r.json())
       .then((data) => {
         setEod(data);

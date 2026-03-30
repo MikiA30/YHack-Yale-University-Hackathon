@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api";
 
 const riskColor = {
   low: "text-emerald-600",
@@ -23,7 +24,7 @@ export default function SimulatorModal({ item, onClose, onRefresh }) {
 
   const runSimulation = () => {
     setLoading(true);
-    fetch("/simulate", {
+    api("/simulate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item: item.item, restock_qty: qty }),
@@ -36,7 +37,7 @@ export default function SimulatorModal({ item, onClose, onRefresh }) {
   };
 
   const applyRestock = () => {
-    fetch("/update_inventory", {
+    api("/update_inventory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item: item.item, action: "restock", amount: qty }),

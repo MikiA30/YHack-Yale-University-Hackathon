@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import AuraLogo from "./AuraLogo";
+import api from "../api";
 import {
   BarChart,
   Bar,
@@ -415,7 +416,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
       if (cancelled) return;
       setLoading(true);
       setError(null);
-      fetch("/report")
+      api("/report")
         .then((r) => {
           if (!r.ok) throw new Error("Failed to load report");
           return r.json();

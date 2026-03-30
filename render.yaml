@@ -1,8 +1,9 @@
 services:
   - type: web
-    name: aura
+    name: aura-backend
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     envVars:
       - key: LAVA_FORWARD_TOKEN
-        sync: false  # you'll set this manually in Render dashboard
+        sync: false

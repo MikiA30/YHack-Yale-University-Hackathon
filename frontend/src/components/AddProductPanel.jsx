@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api";
 
 const CATEGORIES = [
   "beverages",
@@ -30,7 +31,7 @@ export default function AddProductPanel({ onRefresh }) {
   const submit = () => {
     setBusy(true);
     setResult(null);
-    fetch("/add_product", {
+    api("/add_product", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

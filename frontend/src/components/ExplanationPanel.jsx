@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api";
 
 export default function ExplanationPanel() {
   const [explanation, setExplanation] = useState(null);
@@ -6,7 +7,7 @@ export default function ExplanationPanel() {
 
   const fetchExplanation = () => {
     setLoading(true);
-    fetch("/explain")
+    api("/explain")
       .then((r) => r.json())
       .then((data) => {
         setExplanation(data.explanation);

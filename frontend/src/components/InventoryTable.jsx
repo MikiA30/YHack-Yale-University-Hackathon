@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api";
 
 const recBadge = {
   "Buy More": "bg-emerald-50 text-emerald-700 border border-emerald-200",
@@ -11,7 +12,7 @@ function QuickActions({ item, onRefresh }) {
 
   const update = (action, amount) => {
     setBusy(true);
-    fetch("/update_inventory", {
+    api("/update_inventory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item: item.item, action, amount }),
@@ -171,7 +172,7 @@ export default function InventoryTable({ inventory, onSimulate, onRefresh }) {
                       <button
                         onClick={() => {
                           if (confirm(`Remove ${row.item} from inventory?`)) {
-                            fetch("/remove_product", {
+                            api("/remove_product", {
                               method: "POST",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({ name: row.item }),

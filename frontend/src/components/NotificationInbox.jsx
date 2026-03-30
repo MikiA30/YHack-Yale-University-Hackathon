@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import api from "../api";
 
 export default function NotificationInbox() {
   const [notifications, setNotifications] = useState([]);
 
   const fetchNotifs = () => {
-    fetch("/notifications")
+    api("/notifications")
       .then((r) => r.json())
       .then((data) => setNotifications(data.notifications));
   };
@@ -16,7 +17,7 @@ export default function NotificationInbox() {
   }, []);
 
   const dismiss = (id) => {
-    fetch("/dismiss_notification", {
+    api("/dismiss_notification", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),

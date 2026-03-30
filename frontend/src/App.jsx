@@ -8,6 +8,7 @@ import ExplanationPanel from "./components/ExplanationPanel";
 import SimulatorModal from "./components/SimulatorModal";
 import NotificationInbox from "./components/NotificationInbox";
 import AddProductPanel from "./components/AddProductPanel";
+import api from "./api";
 import ChatPanel from "./components/ChatPanel";
 import ReportModal from "./components/ReportModal";
 
@@ -27,9 +28,9 @@ function App() {
 
   const refresh = useCallback(() => {
     Promise.all([
-      fetch("/predict").then((r) => r.json()),
-      fetch("/inventory").then((r) => r.json()),
-      fetch("/alerts").then((r) => r.json()),
+      api("/predict").then((r) => r.json()),
+      api("/inventory").then((r) => r.json()),
+      api("/alerts").then((r) => r.json()),
     ]).then(([predData, invData, alertData]) => {
       setPredictions(predData.predictions);
       setInventory(invData.inventory);

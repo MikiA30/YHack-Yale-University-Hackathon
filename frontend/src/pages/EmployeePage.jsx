@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import AuraLogo from "../components/AuraLogo";
 import { Html5Qrcode } from "html5-qrcode";
+import api from "../api";
 
 const ITEMS = [
   "Red Bull Cherry Sakura",
@@ -75,7 +76,7 @@ export default function EmployeePage() {
 
   // Fetch current stock for selected item
   useEffect(() => {
-    fetch("/inventory")
+    api("/inventory")
       .then((r) => r.json())
       .then((data) => {
         const row = data.inventory.find((r) => r.item === selected);
@@ -96,7 +97,7 @@ export default function EmployeePage() {
     const item = itemName || selected;
     setBusy(true);
     setFeedback(null);
-    fetch("/update_inventory", {
+    api("/update_inventory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item, action, amount }),
@@ -218,7 +219,7 @@ export default function EmployeePage() {
             status: "no_match",
           });
           // Notify manager about unrecognized product
-          fetch("/notify_scan", {
+          api("/notify_scan", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

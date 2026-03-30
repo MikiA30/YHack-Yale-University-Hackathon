@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import api from "../api";
 
 export default function LocationSettings() {
   const [location, setLocation] = useState(null);
@@ -8,7 +9,7 @@ export default function LocationSettings() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    fetch("/location")
+    api("/location")
       .then((r) => r.json())
       .then(setLocation)
       .catch(() => {});
@@ -22,7 +23,7 @@ export default function LocationSettings() {
     setBusy(true);
     setError(null);
     setSuccess(false);
-    fetch("/set_location", {
+    api("/set_location", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ zip_code: zip }),
