@@ -1,0 +1,6 @@
+{
+  "venvPath": "backend",
+  "venv": ".venv",
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.14",
+}
