@@ -152,8 +152,7 @@ def set_store_location(lat: float, lon: float, zip_code: str, label: str) -> Non
     """Update the store location and immediately expire the weather cache."""
     global _location
     _location = {"lat": lat, "lon": lon, "zip": zip_code, "label": label}
-    _cache._store.pop("weather", None)   # force fresh fetch on next request
-    print(f"[live_factors] location updated → {label} ({lat:.4f}, {lon:.4f})")
+    _cache._store.pop("weather", None)  # force fresh fetch on next request
 
 
 def _fetch_weather() -> dict:
@@ -340,7 +339,7 @@ def get_live_factors() -> dict:
     """
     result: dict[str, dict] = {}
 
-    # --- Weather (30-min TTL) ---
+    # Weather (30-min TTL)
     cached = _cache.get("weather", _WEATHER_TTL)
     if cached is not None:
         result["weather"] = cached
@@ -348,12 +347,10 @@ def get_live_factors() -> dict:
         try:
             result["weather"] = _score_weather(_fetch_weather())
             _cache.set("weather", result["weather"])
-            print(f"[live_factors] weather refreshed: {result['weather']['summary']}")
-        except Exception as exc:
-            print(f"[live_factors] weather unavailable: {exc}")
+        except Exception:
             result["weather"] = {"score": 0.0, "summary": "unavailable (using fallback)"}
 
-    # --- Economic (24-hr TTL) ---
+    # Economic (24-hr TTL)
     cached = _cache.get("economic", _ECONOMIC_TTL)
     if cached is not None:
         result["economic"] = cached
@@ -361,12 +358,10 @@ def get_live_factors() -> dict:
         try:
             result["economic"] = _score_economic(_fetch_economic())
             _cache.set("economic", result["economic"])
-            print(f"[live_factors] economic refreshed: {result['economic']['summary']}")
-        except Exception as exc:
-            print(f"[live_factors] economic unavailable: {exc}")
+        except Exception:
             result["economic"] = {"score": 0.0, "summary": "unavailable (using fallback)"}
 
-    # --- Events (15-min TTL) ---
+    # Events (15-min TTL)
     cached = _cache.get("events", _EVENT_TTL)
     if cached is not None:
         result["event"] = cached
@@ -374,9 +369,7 @@ def get_live_factors() -> dict:
         try:
             result["event"] = _score_events(_fetch_events())
             _cache.set("events", result["event"])
-            print(f"[live_factors] events refreshed: {result['event']['summary']}")
-        except Exception as exc:
-            print(f"[live_factors] events unavailable: {exc}")
+        except Exception:
             result["event"] = {"score": 0.0, "summary": "unavailable (using fallback)"}
 
     return result
@@ -405,6 +398,5 @@ def get_live_adjustment(name: str, category: str) -> float:
         total = weather_adj + economic_adj + event_adj
         return round(max(-0.40, min(0.40, total)), 4)
 
-    except Exception as exc:
-        print(f"[live_factors] get_live_adjustment failed for {name}: {exc}")
+    except Exception:
         return 0.0

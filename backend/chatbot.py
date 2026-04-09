@@ -20,7 +20,7 @@ LAVA_FORWARD_TOKEN = os.getenv("LAVA_FORWARD_TOKEN", "")
 # Default model — can be overridden per request
 DEFAULT_MODEL = "claude-sonnet-4-6-20250514"
 
-# ── Report action detection ───────────────────────────────────────────────────
+# Report action detection
 _REPORT_RE  = re.compile(r'\b(generate|create|make|show|export|download|get)\b.{0,30}\breport\b', re.I)
 _EXPORT_RE  = re.compile(r'\b(export|download|save)\b.{0,20}\b(pdf|excel|spreadsheet)\b', re.I)
 _FORECAST_RE = re.compile(r'\bshow\b.{0,20}\bforecast\b.{0,20}\bfor\b\s+(.+?)(?:\?|$)', re.I)

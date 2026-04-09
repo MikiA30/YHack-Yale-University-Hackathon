@@ -4,7 +4,7 @@ import ReportModal from "../components/ReportModal";
 import AuraLogo from "../components/AuraLogo";
 import api from "../api";
 
-// ── small helpers ─────────────────────────────────────────────────────────────
+// Helpers
 const fmt$ = (n) => `$${Number(n).toFixed(2)}`;
 const fmtPct = (n) => `${Number(n).toFixed(1)}%`;
 
@@ -47,7 +47,7 @@ function SectionHeader({ title, sub }) {
   );
 }
 
-// ── main page ─────────────────────────────────────────────────────────────────
+// Main page
 export default function MetricsPage() {
   const [financials, setFinancials] = useState(null);
   const [losses, setLosses] = useState(null);
@@ -140,7 +140,7 @@ export default function MetricsPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 bg-gray-50 min-h-screen">
-        {/* ── top stat cards ── */}
+        {/* Top stat cards */}
         <section>
           <SectionHeader
             title="Today's Performance"
@@ -174,7 +174,7 @@ export default function MetricsPage() {
           </div>
         </section>
 
-        {/* ── stockout loss table ── */}
+        {/* Stockout loss table */}
         <section>
           <SectionHeader
             title="Stockout Risk — Projected Losses"
@@ -271,7 +271,7 @@ export default function MetricsPage() {
           )}
         </section>
 
-        {/* ── today's sales breakdown ── */}
+        {/* Today's sales breakdown */}
         <section>
           <SectionHeader
             title="Today's Sales Breakdown"
@@ -360,7 +360,7 @@ export default function MetricsPage() {
           )}
         </section>
 
-        {/* ── end-of-day summary ── */}
+        {/* End-of-day summary */}
         <section>
           <SectionHeader
             title="End-of-Day Summary"
@@ -561,7 +561,7 @@ export default function MetricsPage() {
                 </div>
               )}
 
-              {/* ── A.U.R.A. export suggestion ── */}
+              {/* A.U.R.A. export suggestion */}
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-4 shadow-sm">
                 <div className="shrink-0 mt-0.5">
                   <AuraLogo size={32} />

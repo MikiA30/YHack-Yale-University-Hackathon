@@ -29,25 +29,18 @@ def _load():
     _market_factors = raw["market_factors"]
     _inventory = {item["name"]: dict(item) for item in raw["items"]}
     _last_mtime = _DATA_PATH.stat().st_mtime
-    print(f"[data] inventory_data.json loaded ({len(_inventory)} items)")
 
 
 def _reload_if_changed():
     """Check the file's modification time and reload only if it has changed."""
     current_mtime = _DATA_PATH.stat().st_mtime
     if current_mtime != _last_mtime:
-        print("[data] inventory_data.json changed on disk — reloading…")
         _load()
 
 
 # Load once at startup
 _load()
 
-
-# ---------------------------------------------------------------------------
-# Public read API — each calls _reload_if_changed() so edits to the JSON
-# file are picked up automatically on the next request.
-# ---------------------------------------------------------------------------
 
 def get_store_info():
     _reload_if_changed()

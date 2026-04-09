@@ -20,7 +20,7 @@ def generate_report() -> dict:
 
     item_map = {i["name"]: i for i in items}
 
-    # ── demand forecast (all items, sorted by abs demand change) ──────────────
+    # Demand forecast (all items, sorted by abs demand change)
     forecast = sorted(
         [
             {
@@ -36,7 +36,7 @@ def generate_report() -> dict:
         reverse=True,
     )
 
-    # ── revenue / profit per item (projected weekly) ───────────────────────────
+    # Revenue / profit per item (projected weekly)
     revenue_data = sorted(
         [
             {
@@ -55,10 +55,10 @@ def generate_report() -> dict:
         reverse=True,
     )
 
-    # ── top 5 sellers by projected revenue ────────────────────────────────────
+    # Top 5 sellers by projected revenue
     top_sellers = revenue_data[:5]
 
-    # ── action items (anything not "Hold") ───────────────────────────────────
+    # Action items (anything not "Hold")
     recommendations = [
         {
             "item":             p["item"],
@@ -71,7 +71,7 @@ def generate_report() -> dict:
         if p["recommendation"] != "Hold"
     ]
 
-    # ── live signals summary (only include signals with real data) ─────────────
+    # Live signals summary (only include signals with real data)
     live_summary: dict = {}
     try:
         live = get_live_factors()

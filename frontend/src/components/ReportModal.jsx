@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// Helpers
 const fmt$ = (n) => `$${Number(n ?? 0).toFixed(2)}`;
 const fmtPct = (n) => `${Number(n ?? 0).toFixed(1)}%`;
 const abbrev = (name) => {
@@ -68,7 +68,7 @@ function SectionTitle({ children }) {
   );
 }
 
-// ── PDF export ────────────────────────────────────────────────────────────────
+// PDF export
 function exportPDF(report) {
   try {
     const doc = new jsPDF({
@@ -90,7 +90,7 @@ function exportPDF(report) {
       doc.setFont(undefined, "normal");
     };
 
-    // ── Page 1: Summary ──────────────────────────────────────────────────────
+    // Page 1: Summary
     doc.setFontSize(22);
     doc.setTextColor(99, 102, 241);
     doc.setFont(undefined, "bold");
@@ -120,7 +120,7 @@ function exportPDF(report) {
       margin: { left: 14, right: 14 },
     });
 
-    // ── Page 2: Demand Forecast table ────────────────────────────────────────
+    // Page 2: Demand Forecast table
     doc.addPage();
     sectionTitle("Demand Forecast", 18);
 
@@ -145,7 +145,7 @@ function exportPDF(report) {
       margin: { left: 14, right: 14 },
     });
 
-    // ── Page 3: Revenue & Profit table ───────────────────────────────────────
+    // Page 3: Revenue & Profit table
     doc.addPage();
     sectionTitle("Projected Weekly Revenue & Profit", 18);
 
@@ -209,7 +209,7 @@ function exportPDF(report) {
       margin: { left: 14, right: 14 },
     });
 
-    // ── Page 4: Recommendations ───────────────────────────────────────────────
+    // Page 4: Recommendations
     doc.addPage();
     sectionTitle("Action Recommendations", 18);
 
@@ -238,12 +238,11 @@ function exportPDF(report) {
 
     doc.save(`AURA_Report_${date}.pdf`);
   } catch (err) {
-    console.error("PDF export failed:", err);
     alert(`PDF export failed: ${err.message}`);
   }
 }
 
-// ── Excel helpers ─────────────────────────────────────────────────────────────
+// Excel helpers
 function setColWidths(ws, widths) {
   ws["!cols"] = widths.map((w) => ({ wch: w }));
 }
@@ -255,13 +254,13 @@ function addSheet(wb, name, headers, rows, colWidths) {
   XLSX.utils.book_append_sheet(wb, ws, name);
 }
 
-// ── Excel export ──────────────────────────────────────────────────────────────
+// Excel export
 function exportExcel(report) {
   try {
     const wb = XLSX.utils.book_new();
     const date = report.generated_at;
 
-    // ── Sheet 1: Summary ──────────────────────────────────────────────────────
+    // Sheet 1: Summary
     const summaryData = [
       ["A.U.R.A. BUSINESS REPORT", "", ""],
       [`Store: ${report.store.name}`, report.store.location, ""],
@@ -284,7 +283,7 @@ function exportExcel(report) {
     setColWidths(wsSummary, [32, 22, 16]);
     XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
 
-    // ── Sheet 2: Demand Forecast ──────────────────────────────────────────────
+    // Sheet 2: Demand Forecast
     addSheet(
       wb,
       "Demand Forecast",
@@ -305,7 +304,7 @@ function exportExcel(report) {
       [32, 14, 16, 12, 16],
     );
 
-    // ── Sheet 3: Revenue & Profit ─────────────────────────────────────────────
+    // Sheet 3: Revenue & Profit
     addSheet(
       wb,
       "Revenue & Profit",
@@ -334,7 +333,7 @@ function exportExcel(report) {
       [32, 12, 12, 22, 22, 10],
     );
 
-    // ── Sheet 4: Stockout Risks ───────────────────────────────────────────────
+    // Sheet 4: Stockout Risks
     addSheet(
       wb,
       "Stockout Risks",
@@ -361,7 +360,7 @@ function exportExcel(report) {
       [32, 10, 12, 12, 14, 14, 10],
     );
 
-    // ── Sheet 5: Recommendations ──────────────────────────────────────────────
+    // Sheet 5: Recommendations
     addSheet(
       wb,
       "Recommendations",
@@ -386,12 +385,11 @@ function exportExcel(report) {
 
     XLSX.writeFile(wb, `AURA_Report_${date}.xlsx`);
   } catch (err) {
-    console.error("Excel export failed:", err);
     alert(`Excel export failed: ${err.message}`);
   }
 }
 
-// ── main component ────────────────────────────────────────────────────────────
+// Main component
 export default function ReportModal({ open, onClose, scrollTo }) {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -451,7 +449,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] overflow-y-auto">
       <div className="min-h-screen flex items-start justify-center py-8 px-4">
         <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-5xl shadow-2xl">
-          {/* ── modal header ── */}
+          {/* Modal header */}
           <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-gray-200 rounded-t-2xl px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <AuraLogo size={32} />
@@ -519,7 +517,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
             </div>
           </div>
 
-          {/* ── body ── */}
+          {/* Body */}
           <div className="px-6 py-6 space-y-10 bg-gray-50/30">
             {loading && (
               <div className="flex items-center justify-center py-24">
@@ -556,7 +554,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
 
             {report && (
               <>
-                {/* ── 1. Executive Summary ── */}
+                {/* 1. Executive Summary */}
                 <section>
                   <SectionTitle>Executive Summary</SectionTitle>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -597,7 +595,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   </div>
                 </section>
 
-                {/* ── 2. Demand Forecast Chart ── */}
+                {/* 2. Demand Forecast Chart */}
                 <section ref={forecastRef}>
                   <SectionTitle>
                     Demand Forecast — Current Stock vs Predicted
@@ -648,7 +646,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   </div>
                 </section>
 
-                {/* ── 3. Revenue & Profit Chart ── */}
+                {/* 3. Revenue & Profit Chart */}
                 <section>
                   <SectionTitle>
                     Projected Weekly Revenue & Profit (Top Items)
@@ -704,7 +702,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   </div>
                 </section>
 
-                {/* ── 4. Top Sellers ── */}
+                {/* 4. Top Sellers */}
                 <section>
                   <SectionTitle>Top Sellers by Projected Revenue</SectionTitle>
                   <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
@@ -750,7 +748,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   </div>
                 </section>
 
-                {/* ── 5. Stockout Risks ── */}
+                {/* 5. Stockout Risks */}
                 <section>
                   <SectionTitle>Stockout Risks</SectionTitle>
                   {report.stockout_risks.length === 0 ? (
@@ -816,7 +814,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   )}
                 </section>
 
-                {/* ── 6. Recommendations ── */}
+                {/* 6. Recommendations */}
                 <section>
                   <SectionTitle>Action Recommendations</SectionTitle>
                   {report.recommendations.length === 0 ? (
@@ -883,7 +881,7 @@ export default function ReportModal({ open, onClose, scrollTo }) {
                   )}
                 </section>
 
-                {/* ── 7. Live Market Signals ── */}
+                {/* 7. Live Market Signals */}
                 {Object.keys(report.live_signals ?? {}).length > 0 && (
                   <section>
                     <SectionTitle>Live Market Signals</SectionTitle>
